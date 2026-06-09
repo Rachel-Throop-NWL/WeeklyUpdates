@@ -3,100 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rachel Throop — IT Project Tools</title>
+<title>eBids & PoP Project Hub — IT Toolbox</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#111;min-height:100vh}
-
-.hero{background:linear-gradient(135deg,#01405C 0%,#288FC2 100%);padding:48px 40px 40px;text-align:center}
-.hero-eyebrow{font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:12px}
-.hero h1{font-size:32px;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:8px}
-.hero p{font-size:15px;color:rgba(255,255,255,0.65);max-width:480px;margin:0 auto;line-height:1.6}
-.hero-meta{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap}
-.meta-pill{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px}
-
-.main{padding:36px 40px;max-width:1000px;margin:0 auto}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#111;min-height:100vh;display:flex;flex-direction:column}
+.hero{background:linear-gradient(135deg,#01405C 0%,#288FC2 100%);padding:40px 40px 36px}
+.hero-back{font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:16px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;text-decoration:none}
+.hero-back:hover{color:#fff}
+.hero h1{font-size:28px;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:6px}
+.hero p{font-size:14px;color:rgba(255,255,255,0.65);max-width:500px;line-height:1.6}
+.hero-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.meta-pill{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);font-size:12px;font-weight:500;padding:4px 12px;border-radius:20px}
+.main{flex:1;padding:32px 40px;max-width:1000px;margin:0 auto;width:100%}
 .section-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:16px}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:32px}
-
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:32px}
 .card{background:#fff;border:1px solid #E4E7EB;border-radius:14px;overflow:hidden;transition:box-shadow .2s,transform .2s;display:flex;flex-direction:column}
-.card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.1);transform:translateY(-2px)}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.09);transform:translateY(-2px)}
 .card-accent{height:4px}
-.card-body{padding:18px 20px;flex:1;display:flex;flex-direction:column}
-.card-icon{font-size:22px;margin-bottom:10px}
-.card-title{font-size:15px;font-weight:700;color:#0D1B2A;margin-bottom:5px;letter-spacing:-.01em}
+.card-body{padding:20px 22px;flex:1;display:flex;flex-direction:column}
+.card-icon{font-size:24px;margin-bottom:10px}
+.card-title{font-size:15px;font-weight:700;color:#0D1B2A;margin-bottom:6px}
 .card-desc{font-size:13px;color:#666;line-height:1.6;flex:1}
 .card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
 .tag{font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;background:#F0F2F5;color:#555}
-.card-footer{padding:12px 20px;border-top:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between}
+.tag-blue{background:#E0F2FE;color:#0C4A6E}
+.tag-amber{background:#FEF3E2;color:#92400E}
+.card-footer{padding:12px 22px;border-top:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between}
 .card-jira{font-size:11px;color:#aaa;font-family:monospace}
 .open-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;background:#01405C;color:#fff;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;transition:background .15s}
 .open-btn:hover{background:#012d41}
-.open-btn-outline{background:transparent;color:#01405C;border:1px solid #01405C}
-.open-btn-outline:hover{background:#E8F4FA}
-
 .divider{border:none;border-top:1px solid #E4E7EB;margin:8px 0 28px}
-
-.footer{text-align:center;padding:28px 40px;font-size:12px;color:#aaa;border-top:1px solid #E4E7EB;margin-top:8px}
-.footer strong{color:#555}
-
-@media(max-width:600px){.hero{padding:36px 20px 28px}.main{padding:24px 18px}.grid{grid-template-columns:1fr}}
+.footer{text-align:center;padding:24px 40px;font-size:12px;color:#aaa;border-top:1px solid #E4E7EB}
+@media(max-width:600px){.hero{padding:28px 20px}.main{padding:24px 18px}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div class="hero">
-  <div class="hero-eyebrow">Newell Brands · Information Technology</div>
-  <h1>IT Project Tools</h1>
-  <p>Interactive tools and resources for the OTC team — built to make project work faster and clearer.</p>
+  <a href="index.html" class="hero-back">← IT Toolbox</a>
+  <h1>🗂️ eBids & PoP Project Hub</h1>
+  <p>All interactive files for the eBids and PoP migration — mockups, decks, specs, and planning tools.</p>
   <div class="hero-meta">
+    <span class="meta-pill">Go-Live: December 1, 2026</span>
     <span class="meta-pill">Rachel Throop · IT Manager</span>
-    <span class="meta-pill">Salesforce & SAP Order-to-Cash</span>
-    <span class="meta-pill">Last updated: June 2026</span>
+    <span class="meta-pill">Status: In Development</span>
   </div>
 </div>
 
 <div class="main">
 
-  <!-- ACTIVE PROJECTS -->
-  <div class="section-label">Active projects</div>
+  <!-- PoP -->
+  <div class="section-label">PoP Migration</div>
   <div class="grid">
 
     <div class="card">
       <div class="card-accent" style="background:linear-gradient(90deg,#288FC2,#5BB8E8)"></div>
       <div class="card-body">
         <div class="card-icon">🏗️</div>
-        <div class="card-title">PoP Community — UI Mockup</div>
+        <div class="card-title">Distributor Community — UI Mockup</div>
         <div class="card-desc">Clickable UI mockup for the Distributor Community portal. Shows search, claim entry, upload history, and error handling screens.</div>
-        <div class="card-tags">
-          <span class="tag">PoP Migration</span>
-          <span class="tag">Salesforce</span>
-          <span class="tag">For Venkat</span>
-        </div>
+        <div class="card-tags"><span class="tag tag-blue">PoP</span><span class="tag tag-blue">Salesforce</span><span class="tag">For Venkat</span></div>
       </div>
       <div class="card-footer">
         <span class="card-jira">SFDC-25708</span>
-        <a href="SFDC-25708-UI-Mockup.html" class="open-btn" target="_blank">Open mockup ↗</a>
+        <a href="SFDC-25708-UI-Mockup.html" class="open-btn" target="_blank">Open ↗</a>
       </div>
     </div>
+
+    <div class="card">
+      <div class="card-accent" style="background:linear-gradient(90deg,#01405C,#288FC2)"></div>
+      <div class="card-body">
+        <div class="card-icon">📄</div>
+        <div class="card-title">Distributor Community — Technical Spec</div>
+        <div class="card-desc">Full developer specification for SFDC-25708. Sections, field tables, validation rules, processing flow, error handling, and acceptance criteria.</div>
+        <div class="card-tags"><span class="tag tag-blue">PoP</span><span class="tag">Tech spec</span><span class="tag">For Venkat</span></div>
+      </div>
+      <div class="card-footer">
+        <span class="card-jira">SFDC-25708</span>
+        <a href="SFDC-25708-PoP-Community-Design-Spec.html" class="open-btn" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-accent" style="background:linear-gradient(90deg,#BA7517,#F59E0B)"></div>
+      <div class="card-body">
+        <div class="card-icon">🔗</div>
+        <div class="card-title">SAP Integration — Working Session Deck</div>
+        <div class="card-desc">Interactive deck for the PoP SAP integration call. Covers the 3 integration requirements — billing data pull, ZCMIR pull, and credit memo push — with live checklists and summary slide.</div>
+        <div class="card-tags"><span class="tag tag-blue">PoP</span><span class="tag tag-amber">SAP</span><span class="tag">Working session</span></div>
+      </div>
+      <div class="card-footer">
+        <span class="card-jira">SFDC-25060 · SFDC-25966</span>
+        <a href="pop-sap-integration-deck.html" class="open-btn" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <!-- eBids -->
+  <div class="section-label">eBids Migration</div>
+  <div class="grid">
 
     <div class="card">
       <div class="card-accent" style="background:linear-gradient(90deg,#E24B4A,#F07070)"></div>
       <div class="card-body">
         <div class="card-icon">💰</div>
-        <div class="card-title">eBids Pricing — Working Session Deck</div>
-        <div class="card-desc">Interactive slide deck for the eBids pricing requirements working session. Includes per-slide field checklists and a live summary of confirmed vs. open items.</div>
-        <div class="card-tags">
-          <span class="tag">eBids</span>
-          <span class="tag">Pricing</span>
-          <span class="tag">Working session</span>
-        </div>
+        <div class="card-title">Pricing — Working Session Deck</div>
+        <div class="card-desc">Interactive deck for the eBids pricing requirements working session. Per-slide field checklists and a live summary of confirmed vs. open items.</div>
+        <div class="card-tags"><span class="tag">eBids</span><span class="tag">Pricing</span><span class="tag">Working session</span></div>
       </div>
       <div class="card-footer">
         <span class="card-jira">SFDC-25402 · SFDC-25405</span>
-        <a href="ebids-pricing-deck.html" class="open-btn" target="_blank">Open deck ↗</a>
+        <a href="ebids-pricing-deck.html" class="open-btn" target="_blank">Open ↗</a>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <!-- Project planning -->
+  <div class="section-label">Project planning</div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="card-accent" style="background:linear-gradient(90deg,#4A148C,#9C27B0)"></div>
+      <div class="card-body">
+        <div class="card-icon">📋</div>
+        <div class="card-title">eBids & PoP — Communication Planner</div>
+        <div class="card-desc">Pre-filled communication planner for the eBids and PoP migration. All stakeholders, meetings, decisions, and next steps loaded. Auto-saves to your browser.</div>
+        <div class="card-tags"><span class="tag">eBids</span><span class="tag tag-blue">PoP</span><span class="tag">Pre-filled</span></div>
+      </div>
+      <div class="card-footer">
+        <span class="card-jira">eBids & PoP Migration</span>
+        <a href="pcp-ebids-pop.html" class="open-btn" target="_blank">Open ↗</a>
       </div>
     </div>
 
@@ -106,109 +149,21 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#111;mi
         <div class="card-icon">📊</div>
         <div class="card-title">Weekly Status Report</div>
         <div class="card-desc">Current week project status across eBids, PoP, MAPA EMEA, and International IT. Shared with Mike weekly.</div>
-        <div class="card-tags">
-          <span class="tag">Status</span>
-          <span class="tag">All projects</span>
-          <span class="tag">For Mike</span>
-        </div>
+        <div class="card-tags"><span class="tag">Status</span><span class="tag">All projects</span><span class="tag">For Mike</span></div>
       </div>
       <div class="card-footer">
         <span class="card-jira">Week of June 8, 2026</span>
-        <a href="status-jun04-simple.html" class="open-btn" target="_blank">Open report ↗</a>
+        <a href="status-jun04-simple.html" class="open-btn" target="_blank">Open ↗</a>
       </div>
     </div>
 
-  </div>
-
-  <hr class="divider">
-
-  <!-- TEAM TOOLS -->
-  <div class="section-label">Team tools</div>
-  <div class="grid">
-
-    <div class="card">
-      <div class="card-accent" style="background:linear-gradient(90deg,#059669,#34D399)"></div>
-      <div class="card-body">
-        <div class="card-icon">📋</div>
-        <div class="card-title">Project Communication Planner</div>
-        <div class="card-desc">A personal PM tool for tracking stakeholders, meetings, decisions, next steps, and kickoff emails. Auto-saves to your browser. Download a snapshot to share anytime.</div>
-        <div class="card-tags">
-          <span class="tag">Template</span>
-          <span class="tag">PM tool</span>
-          <span class="tag">Reusable</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-jira">Blank template</span>
-        <a href="project-communication-planner.html" class="open-btn" target="_blank">Open tool ↗</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-accent" style="background:linear-gradient(90deg,#4A148C,#9C27B0)"></div>
-      <div class="card-body">
-        <div class="card-icon">📋</div>
-        <div class="card-title">eBids & PoP — Communication Planner</div>
-        <div class="card-desc">Pre-filled communication planner for the eBids and PoP migration. All stakeholders, meetings, decisions, and next steps loaded and ready.</div>
-        <div class="card-tags">
-          <span class="tag">eBids</span>
-          <span class="tag">PoP</span>
-          <span class="tag">Pre-filled</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-jira">eBids & PoP Migration</span>
-        <a href="pcp-ebids-pop.html" class="open-btn" target="_blank">Open planner ↗</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-accent" style="background:linear-gradient(90deg,#92400E,#D97706)"></div>
-      <div class="card-body">
-        <div class="card-icon">📄</div>
-        <div class="card-title">PoP Community — Technical Spec</div>
-        <div class="card-desc">Full developer specification for SFDC-25708. Covers all sections, field tables, validation rules, processing flow, error handling, and acceptance criteria.</div>
-        <div class="card-tags">
-          <span class="tag">PoP</span>
-          <span class="tag">Technical spec</span>
-          <span class="tag">For Venkat</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-jira">SFDC-25708</span>
-        <a href="SFDC-25708-PoP-Community-Design-Spec.html" class="open-btn" target="_blank">Open spec ↗</a>
-      </div>
-    </div>
-
-  </div>
-
-  <hr class="divider">
-
-  <!-- HOW TO USE -->
-  <div class="section-label">How to use these tools</div>
-  <div style="background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:20px 24px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
-    <div>
-      <div style="font-size:18px;margin-bottom:8px">🔗</div>
-      <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:4px">Share a link</div>
-      <div style="font-size:12px;color:#666;line-height:1.6">Copy any URL from this page and send it directly. No download required — opens in any browser.</div>
-    </div>
-    <div>
-      <div style="font-size:18px;margin-bottom:8px">💾</div>
-      <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:4px">Save your work</div>
-      <div style="font-size:12px;color:#666;line-height:1.6">The communication planner auto-saves to your browser. Use the snapshot button to share your current state.</div>
-    </div>
-    <div>
-      <div style="font-size:18px;margin-bottom:8px">📥</div>
-      <div style="font-size:13px;font-weight:600;color:#111;margin-bottom:4px">Use as a template</div>
-      <div style="font-size:12px;color:#666;line-height:1.6">The blank communication planner can be used by anyone on the team for their own projects.</div>
-    </div>
   </div>
 
 </div>
 
 <div class="footer">
-  Built by <strong>Rachel Throop</strong> · IT Manager, Salesforce & SAP OTC · Newell Brands · June 2026<br>
-  <span style="margin-top:4px;display:block">Tools built with Claude · <a href="https://claude.ai" style="color:#288FC2;text-decoration:none">claude.ai</a></span>
+  <a href="index.html" style="color:#288FC2;text-decoration:none">← Back to IT Toolbox</a> &nbsp;·&nbsp;
+  Built by <strong>Rachel Throop</strong> · Newell Brands IT · June 2026
 </div>
 
 </body>

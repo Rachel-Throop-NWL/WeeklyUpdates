@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PoP — SAP Integration Discussion</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",sans-serif;background:#0D1B2A;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.deck{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 56px;opacity:0;transform:translateX(40px);transition:opacity .4s ease,transform .4s ease;pointer-events:none}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:all}
+.slide.exit{opacity:0;transform:translateX(-40px)}
+
+/* Title */
+.s-title{background:#0D1B2A;justify-content:center}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#288FC2;margin-bottom:16px}
+.accent{width:44px;height:3px;background:#288FC2;border-radius:2px;margin-bottom:22px}
+.s-title h1{font-size:44px;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.03em;max-width:560px}
+.s-title .sub{font-size:15px;color:rgba(255,255,255,0.4);margin-top:12px;max-width:460px;line-height:1.6}
+.title-footer{border-top:.5px solid rgba(255,255,255,0.07);padding-top:13px;display:flex;justify-content:space-between;margin-top:auto;font-size:11px;color:rgba(255,255,255,0.2)}
+
+/* Overview */
+.s-overview{background:#fff}
+.slide-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#288FC2;margin-bottom:20px}
+.req-list{display:flex;flex-direction:column;gap:12px;flex:1}
+.req-item{display:flex;gap:16px;align-items:flex-start;padding:16px 18px;border-radius:12px;border:1px solid #E4E7EB}
+.req-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.req-title{font-size:15px;font-weight:600;color:#0D1B2A;margin-bottom:3px}
+.req-desc{font-size:13px;color:#666;line-height:1.5}
+.req-type{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:5px}
+.pull{background:#E0F2FE;color:#0C4A6E}
+.push{background:#DCFCE7;color:#166534}
+.goal-box{margin-top:14px;background:#0D1B2A;border-radius:10px;padding:14px 18px;font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.goal-box strong{color:#fff}
+
+/* Content */
+.s-content{background:#fff}
+.slide-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.step-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.slide-title-text{font-size:24px;font-weight:700;color:#0D1B2A;letter-spacing:-.02em;line-height:1.2}
+.slide-title-sub{font-size:12px;color:#888;margin-top:2px}
+.slide-step-count{font-size:11px;color:#ccc;letter-spacing:.08em;text-transform:uppercase}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0}
+.col-box{border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.col-know{background:#F8FAFC;border:.5px solid #E4E7EB}
+.col-dk{background:#FEF3F2;border:.5px solid #FECACA}
+.col-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.col-know .col-label{color:#288FC2}
+.col-dk .col-label{color:#E24B4A}
+.know-item{display:flex;gap:9px;align-items:flex-start}
+.k-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.k-name{font-size:13px;font-weight:500;color:#111}
+.k-note{font-size:11px;color:#666;margin-top:1px;line-height:1.4}
+.dk-item{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;background:rgba(255,255,255,0.6);border-radius:7px}
+.dk-item p{font-size:13px;color:#7F1D1D;line-height:1.5}
+
+/* Checklist strip */
+.ck-strip{margin-top:14px;padding-top:12px;border-top:.5px solid #E4E7EB}
+.ck-strip-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:8px}
+.ck-items{display:flex;flex-wrap:wrap;gap:7px}
+.ck-item{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:20px;cursor:pointer;border:.5px solid #E4E7EB;background:#F8F9FA;transition:all .15s;user-select:none}
+.ck-item.done{background:#F0FDF4;border-color:#86EFAC}
+.ck-item.tbd{background:#FEF2F2;border-color:#FECACA}
+.ck-circle{width:16px;height:16px;border-radius:50%;border:1.5px solid #CBD5E1;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ck-item.done .ck-circle{background:#059669;border-color:#059669}
+.ck-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ck-name{font-size:12px;font-weight:500;color:#333;transition:all .15s}
+.ck-item.done .ck-name{color:#888;text-decoration:line-through}
+
+/* Summary */
+.s-summary{background:#0D1B2A}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;overflow-y:auto}
+.sum-col{border-radius:12px;padding:16px 18px}
+.sum-confirmed{background:rgba(5,150,105,0.12);border:.5px solid rgba(5,150,105,0.3)}
+.sum-open{background:rgba(239,68,68,0.1);border:.5px solid rgba(239,68,68,0.3)}
+.sum-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.sum-confirmed .sum-label{color:#4ADE80}
+.sum-open .sum-label{color:#FCA5A5}
+.sum-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:.5px solid rgba(255,255,255,0.06)}
+.sum-item:last-child{border-bottom:none}
+.sum-item-name{font-size:13px;color:#fff;font-weight:500}
+.sum-item-sec{font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px}
+
+/* Nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:#0D1B2A;flex-shrink:0}
+.ndots{display:flex;gap:6px}
+.ndot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.18);cursor:pointer;border:none;transition:all .3s}
+.ndot.active{background:#288FC2;transform:scale(1.5)}
+.nav-legend{display:flex;gap:14px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,0.35)}
+.leg-dot{width:6px;height:6px;border-radius:50%}
+.nbtns{display:flex;gap:8px}
+.nbtn{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:500;padding:6px 16px;border-radius:8px;cursor:pointer;border:.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.65);transition:background .2s}
+.nbtn:hover:not(:disabled){background:rgba(255,255,255,0.12)}
+.nbtn:disabled{opacity:.2;cursor:default}
+.nbtn.p{background:#288FC2;border-color:#288FC2;color:#fff}
+.nbtn.p:hover:not(:disabled){background:#1a7aaa}
+.c1{background:#E0F2FE;color:#0C4A6E}
+.c2{background:#DCFCE7;color:#166534}
+.c3{background:#FEF3E2;color:#92400E}
+.c4{background:#EDE7F6;color:#4A148C}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- SLIDE 0: Title -->
+<div class="slide s-title active" id="sl0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <div class="eyebrow">Newell Brands · IT OTC Team · Integration Discussion</div>
+    <div class="accent"></div>
+    <h1>PoP — SAP integration requirements</h1>
+    <p class="sub">Aligning on the three integration requirements needed to migrate the PoP claim and credit settlement process to Salesforce.</p>
+  </div>
+  <div class="title-footer">
+    <span>PoP Migration · SFDC-25060 · SFDC-25966 · June 9, 2026</span>
+    <span>Rodel · Courtlan · Venkat · Rachel</span>
+  </div>
+</div>
+
+<!-- SLIDE 1: Overview -->
+<div class="slide s-overview" id="sl1">
+  <div class="slide-label">What we're aligning on today</div>
+  <div class="req-list">
+    <div class="req-item">
+      <div class="req-num c1">1</div>
+      <div>
+        <div class="req-title">Pull — SAP billing data for claim validation</div>
+        <div class="req-desc">Distributors submit claims against their SAP purchase history. Salesforce needs to query VBRK/VBRP for Sold-to + Material within ±24 months of the Distributor's Invoice Date to validate each claim.</div>
+        <span class="req-type pull">PULL from SAP</span>
+      </div>
+    </div>
+    <div class="req-item">
+      <div class="req-num c2">2</div>
+      <div>
+        <div class="req-title">Pull — ZCMIR Customer Material # records</div>
+        <div class="req-desc">Some Distributors use their own product material numbers. These must be cross-referenced to Newell SAP Material numbers via the ZCMIR table — per line item, potentially 40,000 lookups per upload.</div>
+        <span class="req-type pull">PULL from SAP</span>
+      </div>
+    </div>
+    <div class="req-item">
+      <div class="req-num c3">3</div>
+      <div>
+        <div class="req-title">Push — Credit memo creation in SAP</div>
+        <div class="req-desc">Once a claim is validated, Salesforce must trigger the creation of a credit memo in SAP. This is an SD sales document — not a simple write. Confirmation (memo number, status, date) must return to Salesforce.</div>
+        <span class="req-type push">PUSH to SAP</span>
+      </div>
+    </div>
+  </div>
+  <div class="goal-box"><strong>Goal of this call:</strong> Make sure the right people are aware of these requirements, discuss integration approach and ownership, and determine where to log and track the work.</div>
+  <div style="margin-top:10px;background:rgba(40,143,194,0.15);border-left:3px solid #288FC2;padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:rgba(255,255,255,0.75);line-height:1.6"><strong style="color:#fff">Note — additional SAP pulls under investigation:</strong> <strong style="color:#fff">List Price</strong> (eBids) will be discussed in a separate pricing working session. <strong style="color:#fff">Distributor Price</strong> is relevant to PoP but needs further investigation before it can be added to these integration requirements — to be confirmed in a follow-up.</div>
+</div>
+
+
+<!-- SLIDE 2: Diagram -->
+<div class="slide s-overview" id="sl2">
+  <div class="slide-label">How PoP integrates with SAP — current vs. future state</div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+
+    <div style="display:grid;grid-template-columns:1fr 40px 1fr;gap:0;align-items:center;flex:1">
+
+      <!-- Current state -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:2px">Current state</div>
+        <div style="background:#F8F9FA;border:1px solid #E4E7EB;border-radius:12px;padding:16px 18px">
+          <div style="font-size:13px;font-weight:600;color:#555;margin-bottom:10px">Homegrown system</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="background:#E4E7EB;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;color:#555;flex:1;text-align:center">Homegrown<br><span style="font-weight:400;font-size:11px">PoP system</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="font-size:10px;color:#888">→ billing</div>
+              <div style="font-size:18px;color:#888">⇄</div>
+              <div style="font-size:10px;color:#888">← credit memo</div>
+            </div>
+            <div style="background:#FEF3E2;border:1px solid #F5C842;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:600;color:#92400E;flex:1;text-align:center">SAP</div>
+          </div>
+          <div style="margin-top:10px;background:#FEE2E2;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:600;color:#991B1B;text-align:center">Daily batch — not real-time</div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="text-align:center;font-size:22px;color:#288FC2;font-weight:700">→</div>
+
+      <!-- Future state -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#288FC2;margin-bottom:2px">Future state</div>
+        <div style="background:#E8F4FA;border:1px solid #C8E3F0;border-radius:12px;padding:16px 18px">
+          <div style="font-size:13px;font-weight:600;color:#01405C;margin-bottom:10px">Salesforce + MuleSoft</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <div style="background:#fff;border:1px solid #C8E3F0;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:600;color:#0C4A6E;text-align:center">Salesforce<br><span style="font-weight:400;font-size:10px">Community + Validation</span></div>
+            <div style="font-size:16px;color:#288FC2">⇄</div>
+            <div style="background:#fff;border:1px solid #C8E3F0;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:600;color:#0C4A6E;text-align:center">MuleSoft<br><span style="font-weight:400;font-size:10px">Integration layer</span></div>
+            <div style="font-size:16px;color:#288FC2">⇄</div>
+            <div style="background:#FEF3E2;border:1px solid #F5C842;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:600;color:#92400E;text-align:center">SAP</div>
+          </div>
+          <div style="margin-top:10px;background:#DCFCE7;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:600;color:#166534;text-align:center">Real-time (proposed)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pull/push detail -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div style="background:#E0F2FE;border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0C4A6E;margin-bottom:6px">Pull 1</div>
+        <div style="font-size:13px;font-weight:600;color:#0D1B2A;margin-bottom:3px">SAP billing data</div>
+        <div style="font-size:11px;color:#555;line-height:1.5">VBRK/VBRP · Sold-to + Material · Invoice Date ±24 months</div>
+      </div>
+      <div style="background:#E0F2FE;border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0C4A6E;margin-bottom:6px">Pull 2</div>
+        <div style="font-size:13px;font-weight:600;color:#0D1B2A;margin-bottom:3px">ZCMIR records</div>
+        <div style="font-size:11px;color:#555;line-height:1.5">Customer Material # → Newell SAP Material # cross-reference</div>
+      </div>
+      <div style="background:#DCFCE7;border-radius:10px;padding:12px 14px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#166534;margin-bottom:6px">Push</div>
+        <div style="font-size:13px;font-weight:600;color:#0D1B2A;margin-bottom:3px">Credit memo creation</div>
+        <div style="font-size:11px;color:#555;line-height:1.5">SD sales document · confirmation (memo #, status, date) returns to Salesforce</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SLIDE 3: Billing data pull -->
+<div class="slide s-content" id="sl3">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c1">1</div>
+      <div><p class="slide-title-text">Pull — SAP billing data</p><p class="slide-title-sub">Claim validation against VBRK / VBRP</p></div>
+    </div>
+    <span class="slide-step-count">Requirement 1 of 3</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#BA7517"></div><div><div class="k-name">SAP tables</div><div class="k-note">VBRK (billing document header) · VBRP (billing document item)</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Query parameters</div><div class="k-note">Sold-to (Distributor ID) + Material + Invoice Date ±24 months</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Invoice Date</div><div class="k-note">Distributor's date to their end customer — NOT an SAP date. Used as center of the 24-month lookup window.</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Selection criteria</div><div class="k-note">Sales Orgs US07/US72 · Divisions 40–45 · Account Groups Z001/Z011</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#888"></div><div><div class="k-name">Current state</div><div class="k-note">Daily batch export from SAP — not real-time. Goal is to move to real-time query.</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we need to confirm</div>
+      <div class="dk-item"><p>Is real-time query of VBRK/VBRP feasible for claim validation?</p></div>
+      <div class="dk-item"><p>What is the recommended integration method — MuleSoft, API, or direct callout?</p></div>
+      <div class="dk-item"><p>What is the expected performance/response time for a real-time query at this volume?</p></div>
+      <div class="dk-item"><p>If real-time is not feasible — what is the best approach to replicate the daily batch in Salesforce?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Confirm during discussion</div>
+    <div class="ck-items" id="ck2"></div>
+  </div>
+</div>
+
+<!-- SLIDE 3: ZCMIR -->
+<div class="slide s-content" id="sl4">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c2">2</div>
+      <div><p class="slide-title-text">Pull — ZCMIR records</p><p class="slide-title-sub">Customer Material # cross-reference · SFDC-25966</p></div>
+    </div>
+    <span class="slide-step-count">Requirement 2 of 3</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#BA7517"></div><div><div class="k-name">What ZCMIR is</div><div class="k-note">SAP table that cross-references a Distributor's own product material number to the Newell SAP Material #</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">When it's needed</div><div class="k-note">Some Distributors enter their own Customer Material # on claim line items instead of the Newell SAP Material #</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Scope</div><div class="k-note">Per line item lookup — up to 40,000 lookups on a large upload file</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#E24B4A"></div><div><div class="k-name">Current gap</div><div class="k-note">ZCMIR records exist in SAP but do NOT currently exist in Salesforce — SFDC-25966 open</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we need to confirm</div>
+      <div class="dk-item"><p>How should ZCMIR records be brought into Salesforce — real-time lookup, scheduled sync, or manual load?</p></div>
+      <div class="dk-item"><p>What is the volume and frequency of ZCMIR record changes in SAP?</p></div>
+      <div class="dk-item"><p>What is the recommended approach to support 40,000 per-line lookups at upload time?</p></div>
+      <div class="dk-item"><p>Who owns the ZCMIR table in SAP and who can provide the records?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Confirm during discussion</div>
+    <div class="ck-items" id="ck3"></div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Credit memo push -->
+<div class="slide s-content" id="sl5">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c3">3</div>
+      <div><p class="slide-title-text">Push — Credit memo creation</p><p class="slide-title-sub">SAP SD sales document · triggered from Salesforce</p></div>
+    </div>
+    <span class="slide-step-count">Requirement 3 of 3</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#2E7D32"></div><div><div class="k-name">Document type</div><div class="k-note">SAP SD Credit Memo — document type <strong>CR</strong></div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#2E7D32"></div><div><div class="k-name">eBid # mapping</div><div class="k-note">eBid number should flow into the SAP Sales Order <strong>Purchase Order</strong> field — to be confirmed</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Business rules</div><div class="k-note">Limited to 500 lines per memo · large uploads generate multiple memos · credits under $150 held in Status 900</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Confirmation needed</div><div class="k-note">SAP must return credit memo number, status, and date back to Salesforce so the Distributor can see settlement details in the portal</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#888"></div><div><div class="k-name">Current state</div><div class="k-note">Runs overnight in the homegrown system — processed as a batch to SAP</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we need to confirm</div>
+      <div class="dk-item"><p>Confirm CR document type is correct and available in the relevant sales orgs (US07/US72)</p></div>
+      <div class="dk-item"><p>Confirm eBid # flows into the SAP Purchase Order field on the credit memo</p></div>
+      <div class="dk-item"><p>What data payload does SAP need to create the credit memo?</p></div>
+      <div class="dk-item"><p>What is the recommended push mechanism — MuleSoft, BAPI, RFC, or other?</p></div>
+      <div class="dk-item"><p>How does SAP confirm back to Salesforce — synchronous response or async callback?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Confirm during discussion</div>
+    <div class="ck-items" id="ck4"></div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Next steps -->
+<div class="slide s-content" id="sl6">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c4">✓</div>
+      <div><p class="slide-title-text">Next steps</p><p class="slide-title-sub">What we need to walk away with today</p></div>
+    </div>
+    <span class="slide-step-count">Wrap up</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">Decisions needed today</div>
+      <div class="know-item"><div class="k-dot" style="background:#288FC2"></div><div><div class="k-name">Integration approach</div><div class="k-note">Real-time vs. batch for billing data pull · MuleSoft vs. other for push/pull mechanism</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#288FC2"></div><div><div class="k-name">Ownership</div><div class="k-note">Who owns each integration point on the SAP/MuleSoft side?</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#288FC2"></div><div><div class="k-name">Where to log requirements</div><div class="k-note">Jira (SFDC-25060) or AskIT — who creates the work items?</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#288FC2"></div><div><div class="k-name">ZCMIR ownership</div><div class="k-note">Who in SAP owns the ZCMIR table and can provide records for Salesforce?</div></div></div>
+    </div>
+    <div class="col-box" style="background:#F8FAFC;border:.5px solid #E4E7EB">
+      <div class="col-label" style="color:#288FC2">Reference Jiras</div>
+      <div class="know-item"><div class="k-dot" style="background:#0C4A6E"></div><div><div class="k-name">SFDC-25060</div><div class="k-note">PoP — Integrate Salesforce with SAP · SAP integration design and build</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#E24B4A"></div><div><div class="k-name">SFDC-25966</div><div class="k-note">ZCMIR Customer Material Records gap — records don't exist in Salesforce</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#0C4A6E"></div><div><div class="k-name">SFDC-25709</div><div class="k-note">PoP Migration epic — parent of all PoP work</div></div></div>
+      <div style="margin-top:12px;padding:10px 12px;background:#E0F2FE;border-radius:8px;font-size:12px;color:#0C4A6E;line-height:1.6">
+        <strong>Note:</strong> Rachel is OOO June 12–18. Decisions and next steps from this call need to be documented and logged before Friday.
+      </div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Mark items confirmed</div>
+    <div class="ck-items" id="ck5"></div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Summary -->
+<div class="slide s-summary" id="sl7">
+  <div style="margin-bottom:20px">
+    <p style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#288FC2;margin-bottom:8px">Call summary</p>
+    <h2 style="font-size:26px;font-weight:700;color:#fff;letter-spacing:-.02em">What we confirmed · what's still open</h2>
+  </div>
+  <div class="sum-grid">
+    <div class="sum-col sum-confirmed">
+      <div class="sum-label">✔ Confirmed</div>
+      <div id="sum-confirmed-list"><p style="font-size:13px;color:rgba(255,255,255,0.4)">Check off items on each slide to populate this list</p></div>
+    </div>
+    <div class="sum-col sum-open">
+      <div class="sum-label">○ Still open</div>
+      <div id="sum-open-list"><p style="font-size:13px;color:rgba(255,255,255,0.4)">Unconfirmed items will appear here</p></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="nav">
+  <div class="nav-legend">
+    <div class="leg"><div class="leg-dot" style="background:#288FC2"></div>Pull from SAP</div>
+    <div class="leg"><div class="leg-dot" style="background:#059669"></div>Push to SAP</div>
+    <div class="leg"><div class="leg-dot" style="background:#E24B4A"></div>TBD / open</div>
+  </div>
+  <div class="ndots" id="ndots"></div>
+  <div class="nbtns">
+    <button class="nbtn" id="bp" onclick="go(-1)" disabled>← Back</button>
+    <button class="nbtn p" id="bn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+var ckFields = {
+  3:[
+    {id:'real-time-feasible',name:'Real-time feasible?',dot:'#288FC2',tbd:true},
+    {id:'integration-method',name:'Integration method',dot:'#E24B4A',tbd:true},
+    {id:'performance',name:'Performance / response time',dot:'#E24B4A',tbd:true},
+    {id:'batch-fallback',name:'Batch fallback approach',dot:'#888',tbd:true},
+  ],
+  4:[
+    {id:'zcmir-approach',name:'ZCMIR sync approach',dot:'#E24B4A',tbd:true},
+    {id:'zcmir-volume',name:'ZCMIR record volume / frequency',dot:'#E24B4A',tbd:true},
+    {id:'zcmir-owner',name:'ZCMIR SAP owner',dot:'#E24B4A',tbd:true},
+  ],
+  5:[
+    {id:'sd-doc-type',name:'SD document type',dot:'#E24B4A',tbd:true},
+    {id:'data-payload',name:'Data payload required',dot:'#E24B4A',tbd:true},
+    {id:'push-mechanism',name:'Push mechanism',dot:'#E24B4A',tbd:true},
+    {id:'sap-confirmation',name:'SAP confirmation method',dot:'#E24B4A',tbd:true},
+  ],
+  6:[
+    {id:'integration-approach',name:'Integration approach decided',dot:'#288FC2',tbd:true},
+    {id:'ownership',name:'Ownership confirmed',dot:'#288FC2',tbd:true},
+    {id:'where-to-log',name:'Where to log requirements',dot:'#288FC2',tbd:true},
+    {id:'zcmir-ownership',name:'ZCMIR ownership confirmed',dot:'#288FC2',tbd:true},
+  ]
+};
+
+var confirmed={};
+
+function renderCk(s){
+  var c=document.getElementById('ck'+s);
+  if(!c)return;
+  var fields=ckFields[s]||[];
+  if(!fields.length){c.innerHTML='<span style="font-size:12px;color:#aaa">No items for this slide</span>';return;}
+  c.innerHTML='';
+  fields.forEach(function(f){
+    var el=document.createElement('div');
+    var isDone=confirmed[f.id];
+    el.className='ck-item'+(isDone?' done':' tbd');
+    el.onclick=function(){confirmed[f.id]=!confirmed[f.id];renderAllCk();updateSummary();};
+    el.innerHTML='<div class="ck-circle">'+(isDone?'<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4l3 3L9 1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div><div class="ck-dot" style="background:'+f.dot+'"></div><span class="ck-name">'+f.name+'</span>';
+    c.appendChild(el);
+  });
+}
+
+function renderAllCk(){[3,4,5,6].forEach(renderCk);}
+
+function updateSummary(){
+  var all=[];
+  [3,4,5,6].forEach(function(s){(ckFields[s]||[]).forEach(function(f){all.push(f);});});
+  var conf=all.filter(function(f){return confirmed[f.id];});
+  var open=all.filter(function(f){return !confirmed[f.id];});
+  var cl=document.getElementById('sum-confirmed-list');
+  var ol=document.getElementById('sum-open-list');
+  cl.innerHTML=conf.length?conf.map(function(f){return '<div class="sum-item"><div style="width:7px;height:7px;border-radius:50%;background:'+f.dot+';flex-shrink:0;margin-top:4px"></div><div><div class="sum-item-name">'+f.name+'</div></div></div>';}).join(''):'<p style="font-size:13px;color:rgba(255,255,255,0.3)">Nothing confirmed yet</p>';
+  ol.innerHTML=open.length?open.map(function(f){return '<div class="sum-item"><div style="width:7px;height:7px;border-radius:50%;background:'+f.dot+';flex-shrink:0;margin-top:4px"></div><div><div class="sum-item-name">'+f.name+'</div></div></div>';}).join(''):'<p style="font-size:13px;color:rgba(255,255,255,0.3)">All items confirmed!</p>';
+}
+
+var N=8;var cur=0;
+var ids=['sl0','sl1','sl2','sl3','sl4','sl5','sl6','sl7'];
+var dc=document.getElementById('ndots');
+for(var i=0;i<N;i++){var d=document.createElement('button');d.className='ndot'+(i===0?' active':'');d.id='nd'+i;(function(n){d.onclick=function(){goTo(n);};})(i);dc.appendChild(d);}
+
+function goTo(n){
+  var p=document.getElementById(ids[cur]);if(p){p.classList.remove('active');p.classList.add('exit');setTimeout(function(){p.classList.remove('exit');},400);}
+  cur=n;
+  var nx=document.getElementById(ids[cur]);if(nx)nx.classList.add('active');
+  document.getElementById('bp').disabled=cur===0;
+  var bn=document.getElementById('bn');bn.disabled=cur===N-1;bn.textContent=cur===N-1?'Done ✓':'Next →';
+  for(var i=0;i<N;i++)document.getElementById('nd'+i).classList.toggle('active',i===cur);
+  if(cur===6)updateSummary();
+}
+
+function go(d){var n=Math.max(0,Math.min(N-1,cur+d));if(n!==cur)goTo(n);}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);});
+renderAllCk();updateSummary();
+</script>
+</body>
+</html>

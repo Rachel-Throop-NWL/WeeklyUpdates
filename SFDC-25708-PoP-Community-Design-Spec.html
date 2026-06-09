@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SFDC-25708 — PoP Distributor Community Design Spec</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#111;font-size:14px;padding:32px}
+.page{max-width:900px;margin:0 auto}
+.hdr{background:linear-gradient(135deg,#01405C,#288FC2);border-radius:14px;padding:22px 28px;margin-bottom:20px}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr h1{font-size:20px;font-weight:700;color:#fff}
+.hdr p{font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px}
+.hdr-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pill{font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.15);color:#fff}
+.pill-warn{background:rgba(239,68,68,0.3);color:#FCA5A5}
+.pill-ok{background:rgba(5,150,105,0.3);color:#6EE7B7}
+.section{background:#fff;border:1px solid #E4E7EB;border-radius:12px;padding:20px 24px;margin-bottom:14px}
+.section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #F0F0F0}
+.section-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.section-title{font-size:16px;font-weight:700;color:#0D1B2A}
+.section-sub{font-size:12px;color:#888;margin-top:1px}
+.n1{background:#E0F2FE;color:#0C4A6E}.n2{background:#DCFCE7;color:#166534}.n3{background:#FEF3E2;color:#92400E}
+.n4{background:#EDE7F6;color:#4A148C}.n5{background:#FEE2E2;color:#991B1B}.n6{background:#F1F5F9;color:#475569}
+.n7{background:#FDF4FF;color:#6B21A8}.n8{background:#FFF7ED;color:#92400E}
+.subsec{margin-bottom:18px}
+.subsec:last-child{margin-bottom:0}
+.subsec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#888;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:4px}
+th{background:#F8F9FA;padding:8px 12px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#666;border-bottom:1px solid #E4E7EB}
+td{padding:8px 12px;border-bottom:1px solid #F5F5F5;vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+.req{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#FEE2E2;color:#991B1B;margin-left:4px}
+.opt{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#F1F5F9;color:#475569;margin-left:4px}
+.tbd{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#FEF3E2;color:#92400E;margin-left:4px}
+.rule{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;background:#F8F9FA;border-radius:8px;margin-bottom:6px;font-size:13px}
+.rule-num{width:20px;height:20px;border-radius:50%;background:#01405C;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.rule-text{color:#333;line-height:1.5}
+.flow{display:flex;flex-direction:column;gap:0}
+.flow-step{display:flex;gap:14px;align-items:flex-start;position:relative}
+.flow-step-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.flow-num{width:28px;height:28px;border-radius:50%;background:#01405C;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.flow-connector{width:2px;background:#E4E7EB;flex:1;min-height:16px;margin:3px 0}
+.flow-step:last-child .flow-connector{display:none}
+.flow-body{padding-bottom:16px;flex:1}
+.flow-title{font-size:13px;font-weight:600;color:#111;margin-bottom:2px}
+.flow-desc{font-size:12px;color:#666;line-height:1.5}
+.open-item{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;background:#FEF3F2;border:1px solid #FECACA;border-radius:8px;margin-bottom:6px}
+.open-dot{width:8px;height:8px;border-radius:50%;background:#EF4444;flex-shrink:0;margin-top:4px}
+.open-text{font-size:13px;color:#7F1D1D;line-height:1.5}
+.open-text strong{color:#991B1B}
+.ac-item{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #F5F5F5;font-size:13px;color:#333}
+.ac-item:last-child{border-bottom:none}
+.ac-box{width:16px;height:16px;border:1.5px solid #CBD5E1;border-radius:4px;flex-shrink:0;margin-top:2px}
+.note{background:#E0F2FE;border-left:3px solid #288FC2;padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#555;line-height:1.6;margin-bottom:10px}
+.warn-note{background:#FEF3F2;border-left:3px solid #EF4444;padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;color:#7F1D1D;line-height:1.6;margin-bottom:10px}
+.footer{text-align:center;font-size:11px;color:#aaa;padding:20px 0}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:#F1F5F9;padding:1px 5px;border-radius:4px;color:#334155}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <h1>SFDC-25708 — PoP Distributor Community Design</h1>
+      <p>Technical requirements spec · Assigned to: Venkat Kuttua · PoP Migration Epic: SFDC-25709</p>
+    </div>
+  </div>
+  <div class="hdr-pills">
+    <span class="pill">Go-Live: Dec 1, 2026</span>
+    <span class="pill">Status: To Do</span>
+    <span class="pill-warn">⚠ Blocked: SFDC-25966 ZCMIR gap</span>
+    <span class="pill-warn">⚠ Pending: Sandra error codes (SFDC-25890)</span>
+  </div>
+</div>
+
+<!-- SECTION 1: OVERVIEW -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n1">1</div>
+    <div><div class="section-title">Overview</div><div class="section-sub">What we're building and why</div></div>
+  </div>
+  <div class="note">Design and build a Salesforce Community portal for Distributors to submit and manage pricing claims, replacing the current Citrix-based PoP system. Distributors will NOT use Citrix, the bid system, or any other pathway — this portal is their only interface.</div>
+  <table>
+    <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Replaces</td><td>Homegrown Citrix-based PoP system</td></tr>
+      <tr><td>Users</td><td>External Distributors (Community portal users)</td></tr>
+      <tr><td>Upload capacity</td><td>Up to 40,000 lines per file</td></tr>
+      <tr><td>Upload frequency</td><td>Mostly monthly, some weekly — based on invoices to end users</td></tr>
+      <tr><td>SAP integration</td><td>Pulls billing data + ZCMIR records · Pushes credit memo trigger</td></tr>
+      <tr><td>Related Jiras</td><td>SFDC-25060 (SAP integration) · SFDC-25890 (error handling) · SFDC-25966 (ZCMIR gap)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SECTION 2: SEARCH -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n2">2</div>
+    <div><div class="section-title">Search interface</div><div class="section-sub">Two search sections on the Distributor's homepage</div></div>
+  </div>
+  <div class="subsec">
+    <div class="subsec-title">Section A — General Search</div>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Upload ID</td><td>Text</td><td>Maps to Batch ID generated on submission</td></tr>
+        <tr><td>Bid Number</td><td>Text</td><td></td></tr>
+        <tr><td>Distributor Name</td><td>Text</td><td></td></tr>
+        <tr><td>Customer Name / Number</td><td>Text</td><td></td></tr>
+        <tr><td>Username</td><td>Text</td><td></td></tr>
+        <tr><td>Invoice Date</td><td>Date range</td><td></td></tr>
+        <tr><td>Claim Submission Date</td><td>Date range</td><td></td></tr>
+        <tr><td>Status</td><td>Picklist</td><td>Submitted / Error / Pending / Processing / Complete</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="subsec">
+    <div class="subsec-title">Section B — Credit Memo Criteria</div>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Purchase Order Number</td><td>Text</td><td></td></tr>
+        <tr><td>Order Number</td><td>Text</td><td></td></tr>
+        <tr><td>Order Creation Date</td><td>Date range</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 3: CLAIM ENTRY -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n3">3</div>
+    <div><div class="section-title">Claim entry</div><div class="section-sub">Two entry methods · two submission types · required and optional fields</div></div>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">Entry method</div>
+    <table>
+      <thead><tr><th>Method</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>File upload</td><td>Spreadsheet upload · up to 40,000 lines · files over limit must be split</td></tr>
+        <tr><td>Manual entry</td><td>Distributor keys data directly in portal · one line item at a time</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">Submission type (Distributor selects one)</div>
+    <table>
+      <thead><tr><th>Type</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Submit for Claims Approval</td><td>Standard credit claim — processed through validation and SAP</td></tr>
+        <tr><td>Submit Not for Credit</td><td>Informational submission only — no credit requested</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">Required fields <span class="req">REQUIRED</span></div>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Bid Number</td><td>Text</td><td>Validated against SAP — must be valid and active</td></tr>
+        <tr><td>Distributor ID</td><td>Text</td><td>= SAP Customer Account #</td></tr>
+        <tr><td>Customer Name</td><td>Text</td><td></td></tr>
+        <tr><td>Invoice Date</td><td>Date</td><td>Distributor's date to their end customer — NOT an SAP date. Used as center of 24-month SAP billing lookup window.</td></tr>
+        <tr><td>Invoice Number</td><td>Text</td><td></td></tr>
+        <tr><td>Product</td><td>Text / Lookup</td><td>Newell SAP Material # — or Customer Material # cross-referenced via ZCMIR (see Section 6)</td></tr>
+        <tr><td>Quantity</td><td>Number</td><td>Cannot exceed Distributor's SAP purchase history for this product</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsec">
+    <div class="subsec-title">Optional fields <span class="opt">OPTIONAL</span></div>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>Customer Ship-to Street Address</td><td>Text</td></tr>
+        <tr><td>Customer Ship-to City</td><td>Text</td></tr>
+        <tr><td>Customer Ship-to State</td><td>Dropdown</td></tr>
+        <tr><td>Customer Ship-to Zip</td><td>Text</td></tr>
+        <tr><td>Customer Phone</td><td>Text</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 4: VALIDATION -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n4">4</div>
+    <div><div class="section-title">Validation rules</div><div class="section-sub">All rules run at submission time against SAP data</div></div>
+  </div>
+  <div class="rule"><div class="rule-num">1</div><div class="rule-text">Bid number must be valid and active in SAP</div></div>
+  <div class="rule"><div class="rule-num">2</div><div class="rule-text">Distributor must be listed on the bid</div></div>
+  <div class="rule"><div class="rule-num">3</div><div class="rule-text">Product must be on the bid</div></div>
+  <div class="rule"><div class="rule-num">4</div><div class="rule-text">Claim quantity cannot exceed what the Distributor purchased in SAP — system checks SAP billing history (VBRK/VBRP) for Distributor + Product within ±24 months of the Distributor's Invoice Date</div></div>
+  <div class="rule"><div class="rule-num">5</div><div class="rule-text">Bid price and current customer SAP price are pulled and compared</div></div>
+  <div class="rule"><div class="rule-num">6</div><div class="rule-text">Credit calculated using multiple pricing tables — line and invoice discounts applied to determine net invoice price</div></div>
+</div>
+
+<!-- SECTION 5: PROCESSING FLOW -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n5">5</div>
+    <div><div class="section-title">Processing & status flow</div><div class="section-sub">From submission through SAP credit memo creation</div></div>
+  </div>
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-step-line"><div class="flow-num">1</div><div class="flow-connector"></div></div>
+      <div class="flow-body"><div class="flow-title">Submission</div><div class="flow-desc">Distributor submits claim. Batch ID generated immediately and displayed to Distributor. Distributor receives email notification confirming submission.</div></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-line"><div class="flow-num">2</div><div class="flow-connector"></div></div>
+      <div class="flow-body"><div class="flow-title">Validation</div><div class="flow-desc">System runs all validation rules (Section 4). Errors flagged immediately — Distributor sees them in portal. Sandra receives automated email on both success and failure.</div></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-line"><div class="flow-num">3</div><div class="flow-connector"></div></div>
+      <div class="flow-body"><div class="flow-title">Pending</div><div class="flow-desc">Valid claims queue for overnight processing to SAP. Status = Pending.</div></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-line"><div class="flow-num">4</div><div class="flow-connector"></div></div>
+      <div class="flow-body"><div class="flow-title">SAP processing (overnight)</div><div class="flow-desc">Credit memos created in SAP. Limited to 500 lines per memo — large uploads generate multiple memos. Credits under $150 held in Status 900 and combined with future credits. No negative uploads — returns handled as separate rebills.</div></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-line"><div class="flow-num">5</div><div class="flow-connector"></div></div>
+      <div class="flow-body"><div class="flow-title">Complete</div><div class="flow-desc">Distributor receives notifications from both PoP and SAP. SAP provides a credit document that differs from the PoP document.</div></div>
+    </div>
+  </div>
+  <div style="margin-top:14px">
+    <div class="subsec-title">Business rules</div>
+    <table>
+      <thead><tr><th>Rule</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>Credit memo line limit</td><td>500 lines per memo — large uploads auto-split into multiple memos</td></tr>
+        <tr><td>Minimum credit threshold</td><td>Credits under $150 held in Status 900 · combined with future credits</td></tr>
+        <tr><td>Negative uploads</td><td>Not supported · returns handled as separate rebills</td></tr>
+        <tr><td>Rebill minimum</td><td>$150 minimum for rebills — Bill investigating <span class="tbd">TBD</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 6: ZCMIR -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n6">6</div>
+    <div><div class="section-title">ZCMIR — Customer Material # cross-reference</div><div class="section-sub">Some Distributors use their own product material numbers</div></div>
+  </div>
+  <div class="warn-note">⚠ ZCMIR records do not currently exist in Salesforce — see SFDC-25966. This blocks the Customer Material # functionality. Do not build this until SFDC-25966 is resolved.</div>
+  <table>
+    <thead><tr><th>Item</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>What is ZCMIR</td><td>SAP table that cross-references a Distributor's own product material number to the Newell SAP Material #</td></tr>
+      <tr><td>When it's used</td><td>Some Distributors enter their own Customer Material # instead of the Newell SAP Material # on claim line items</td></tr>
+      <tr><td>Lookup scope</td><td>Per line item — up to 40,000 lookups on a large upload</td></tr>
+      <tr><td>Current state</td><td>Records exist in SAP but not in Salesforce</td></tr>
+      <tr><td>Blocking</td><td>SFDC-25966 — SF Dev to confirm approach before build</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SECTION 7: ERROR HANDLING -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n7">7</div>
+    <div><div class="section-title">Error handling & notifications</div><div class="section-sub">Who sees what and who can fix what</div></div>
+  </div>
+  <div class="warn-note">⚠ Known gap in current system: Sandra does not always receive failure notifications. The new system must ensure Sandra receives notifications on both successful and failed uploads without exception.</div>
+  <div class="subsec">
+    <div class="subsec-title">Error types by owner</div>
+    <table>
+      <thead><tr><th>Error type</th><th>Example</th><th>Who fixes</th></tr></thead>
+      <tbody>
+        <tr><td>Format errors</td><td>Missing fields, wrong data type, failed file transmission</td><td>Distributor — correct and resubmit</td></tr>
+        <tr><td>Business rule errors</td><td>Invalid Distributor ID, product not on bid, Distributor not listed on bid</td><td>Sandra — internal intervention required</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="subsec">
+    <div class="subsec-title">Notification requirements</div>
+    <table>
+      <thead><tr><th>Recipient</th><th>Trigger</th><th>Channel</th></tr></thead>
+      <tbody>
+        <tr><td>Distributor</td><td>Immediately on submission — success, error, or need to reload</td><td>Email + visible in portal</td></tr>
+        <tr><td>Sandra</td><td>On every submission — success AND failure (no missed failures)</td><td>Email</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">Full error code list pending from Sandra — see SFDC-25890. Do not finalize error handling build until received.</div>
+  <div class="subsec" style="margin-top:14px">
+    <div class="subsec-title">Distributor portal access limits</div>
+    <table>
+      <thead><tr><th>Can access</th><th>Cannot access</th></tr></thead>
+      <tbody>
+        <tr><td>Their own upload history</td><td>Detailed SAP purchase records</td></tr>
+        <tr><td>Total quantities submitted</td><td>Other Distributors' data</td></tr>
+        <tr><td>Log file with all uploads and errors</td><td>SAP billing data directly</td></tr>
+        <tr><td>Batch error correction for large uploads</td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 8: RESULTS VIEW -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n8">8</div>
+    <div><div class="section-title">Results view fields</div><div class="section-sub">Draft — Rachel to confirm before build</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Field</th><th>Description</th><th>Populated when</th></tr></thead>
+    <tbody>
+      <tr><td>Batch ID / Upload ID</td><td>Internal reference number generated on submission</td><td>On submission</td></tr>
+      <tr><td>Submission Date</td><td>Date the claim was submitted</td><td>On submission</td></tr>
+      <tr><td>Submission Type</td><td>Claims Approval or Not for Credit</td><td>On submission</td></tr>
+      <tr><td>Status</td><td>Submitted / Error / Pending / Processing / Complete</td><td>Updated throughout</td></tr>
+      <tr><td>Upload File / Reference</td><td>File name or reference for the uploaded claim</td><td>On upload</td></tr>
+      <tr><td>Total Claim Amount</td><td>Total dollar amount of the claim submitted</td><td>On submission</td></tr>
+      <tr><td>Error Codes</td><td>Displayed when upload contains errors</td><td>On error</td></tr>
+      <tr><td>Credit Memo Number</td><td>SAP credit memo reference number</td><td>On SAP settlement</td></tr>
+      <tr><td>Settlement Date</td><td>Date credit memo was created in SAP</td><td>On SAP settlement</td></tr>
+      <tr><td>Settlement Amount</td><td>Actual settled amount — may differ from claimed amount</td><td>On SAP settlement</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SECTION 9: ACCEPTANCE CRITERIA -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n1">9</div>
+    <div><div class="section-title">Acceptance criteria</div><div class="section-sub">Definition of done</div></div>
+  </div>
+  <div class="ac-item"><div class="ac-box"></div><span>Distributor can log in to the Community and submit a claim (upload or manual)</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Distributor can choose Claims Approval or Not for Credit at submission</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Required fields enforced · optional fields available but not required</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Batch ID generated immediately on submission and displayed to Distributor</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Validation runs against SAP — bid validity, Distributor, product, quantity, pricing</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Sandra receives automated email on both success AND failure — no missed failure notifications</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Distributor sees errors immediately in portal · log file accessible</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Distributor can identify self-serviceable errors vs. Sandra-only errors</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Credit memos limited to 500 lines · credits under $150 held in Status 900</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Distributor can search claim history — General Search and Credit Memo Criteria</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Distributor can only view their own data — no access to SAP data or other Distributors</span></div>
+  <div class="ac-item"><div class="ac-box"></div><span>Admin can provision a new Distributor user</span></div>
+</div>
+
+<!-- SECTION 10: OPEN ITEMS -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-num n5">10</div>
+    <div><div class="section-title">Open items</div><div class="section-sub">Do not build these until resolved</div></div>
+  </div>
+  <div class="open-item"><div class="open-dot"></div><div class="open-text"><strong>SFDC-25966 — ZCMIR records gap</strong> — Customer Material # records don't exist in Salesforce. Must be resolved before Customer Material # lookup can be built.</div></div>
+  <div class="open-item"><div class="open-dot"></div><div class="open-text"><strong>SFDC-25890 — Sandra's error code list</strong> — Full list of error codes and who can fix each one is pending. Required before error handling build is complete.</div></div>
+  <div class="open-item"><div class="open-dot"></div><div class="open-text"><strong>Results field list</strong> — Draft in Section 8. Rachel to confirm before build.</div></div>
+  <div class="open-item"><div class="open-dot"></div><div class="open-text"><strong>Admin provisioning owner</strong> — Who provisions new Distributor users? Must be confirmed before UAT.</div></div>
+  <div class="open-item"><div class="open-dot"></div><div class="open-text"><strong>Additional mandatory upload template fields</strong> — Sandra to confirm if any additional fields should be required on the upload template.</div></div>
+  <div class="open-item"><div class="open-dot"></div><div class="open-text"><strong>$150 minimum for rebills</strong> — Bill investigating. Confirm before rebill processing is built.</div></div>
+</div>
+
+<div class="footer">SFDC-25708 · PoP Distributor Community Design · PoP Migration Epic SFDC-25709 · Go-Live Dec 1, 2026</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Communication Planner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap');
+
+  :root {
+    --ink: #1a1a2e;
+    --ink-soft: #4a4a6a;
+    --ink-muted: #8888aa;
+    --surface: #f7f7fb;
+    --white: #ffffff;
+    --border: #e2e2ef;
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --accent-mid: #818cf8;
+    --green: #059669;
+    --green-light: #ecfdf5;
+    --amber: #d97706;
+    --amber-light: #fffbeb;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --blue: #0284c7;
+    --blue-light: #e0f2fe;
+    --purple: #7c3aed;
+    --purple-light: #f5f3ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #01405C 0%, #01405C 40%, #288FC2 100%);
+    color: white;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    min-height: 90px;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; right: -60px; bottom: 0;
+    width: 520px;
+    background: rgba(40,143,194,0.18);
+    transform: skewX(-18deg);
+    pointer-events: none;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 80px; bottom: 0;
+    width: 260px;
+    background: rgba(255,255,255,0.05);
+    transform: skewX(-18deg);
+    pointer-events: none;
+  }
+  .header-left {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .header-logo-mark {
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, #01405C, #288FC2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  .header-text h1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: white;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  .header-text p {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 3px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+  .header-right {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .phase-pill {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+
+  /* NAV TABS */
+  .nav {
+    background: #01405C;
+    border-bottom: none;
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    padding: 13px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.1px;
+  }
+  .nav-tab:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.06); }
+  .nav-tab.active {
+    color: #ffffff;
+    border-bottom-color: #288FC2;
+    background: rgba(40,143,194,0.15);
+  }
+  .tab-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+  }
+  .tab-dot.done { background: #BCC883; }
+  .tab-dot.active { background: #288FC2; }
+
+  /* MAIN CONTENT */
+  .main { padding: 32px 40px; max-width: 1100px; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+    max-width: 620px;
+    line-height: 1.6;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .badge-decide { background: var(--purple-light); color: var(--purple); }
+  .badge-build { background: var(--blue-light); color: var(--blue); }
+  .badge-inform { background: var(--green-light); color: var(--green); }
+  .badge-all { background: var(--amber-light); color: var(--amber); }
+
+  /* FORM ELEMENTS */
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  input[type="text"], select, textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus,
+  select:focus,
+  textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { margin-bottom: 14px; }
+
+  /* RACI TABLE */
+  .raci-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .raci-table th {
+    background: var(--surface);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .raci-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .raci-table tr:last-child td { border-bottom: none; }
+  .raci-table input[type="text"] { padding: 6px 8px; font-size: 12px; }
+  .raci-table select { padding: 6px 8px; font-size: 12px; }
+
+  .tier-r { color: var(--red); font-weight: 700; }
+  .tier-a { color: var(--purple); font-weight: 700; }
+  .tier-c { color: var(--blue); font-weight: 700; }
+  .tier-i { color: var(--green); font-weight: 700; }
+
+  /* MEETING CADENCE */
+  .meeting-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .meeting-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .meeting-card-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .meeting-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .meeting-card-body { padding: 14px 18px; }
+  .meeting-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .meta-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .meeting-purpose {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 10px;
+  }
+  .when-to-start {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--amber);
+    background: var(--amber-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .attendees-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .attendee-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .attendee-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* AGENDA BUILDER */
+  .agenda-section {
+    margin-bottom: 20px;
+  }
+  .agenda-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .agenda-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .agenda-num {
+    width: 22px; height: 22px;
+    background: var(--accent-light);
+    color: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .agenda-content { flex: 1; }
+  .agenda-title { font-weight: 600; font-size: 13px; margin-bottom: 3px; }
+  .agenda-detail { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+  .agenda-owner {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--ink-muted);
+    white-space: nowrap;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  .agenda-mins {
+    font-size: 11px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+
+  /* BRIDGE GUIDE */
+  .bridge-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .bridge-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .bridge-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .bridge-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+  }
+  .bridge-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .bridge-arrow {
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .bridge-text { font-size: 12px; color: var(--ink-soft); line-height: 1.5; }
+  .bridge-text strong { color: var(--ink); font-weight: 600; }
+
+  /* DECISION LOG */
+  .decision-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--white);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .decision-table th {
+    background: var(--ink);
+    color: white;
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .decision-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .decision-table tr:last-child td { border-bottom: none; }
+  .status-open {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--amber-light);
+    color: var(--amber);
+  }
+  .status-decided {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--green-light);
+    color: var(--green);
+  }
+  .status-escalated {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--red-light);
+    color: var(--red);
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #4338ca; }
+  .btn-outline {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--ink-muted); color: var(--ink); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-danger { background: var(--red-light); color: var(--red); }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 24px;
+    align-items: center;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  .info-box strong { color: var(--accent); }
+
+  .warn-box {
+    background: var(--amber-light);
+    border-left: 3px solid var(--amber);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  /* PHASE TIMELINE */
+  .phase-bar {
+    display: flex;
+    margin-bottom: 28px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--white);
+  }
+  .phase-seg {
+    flex: 1;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-right: 1px solid var(--border);
+  }
+  .phase-seg:last-child { border-right: none; }
+  .phase-seg.active { background: var(--accent); color: white; }
+  .phase-seg:not(.active) { color: var(--ink-muted); }
+  .phase-seg:not(.active):hover { background: var(--surface); color: var(--ink); }
+
+  /* OUTPUT PANEL */
+  .output-panel {
+    background: var(--ink);
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.8;
+    margin-top: 20px;
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .output-panel .out-head { color: #a5b4fc; font-weight: 700; margin-bottom: 4px; }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  /* HELP TOOLTIP */
+  .help {
+    display: inline-block;
+    width: 16px; height: 16px;
+    background: var(--border);
+    color: var(--ink-soft);
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 16px;
+    cursor: help;
+    vertical-align: middle;
+  }
+
+  /* PRINT */
+  @media print {
+    .nav, .btn-row, .header { display: none; }
+    .section { display: block !important; page-break-after: always; }
+    .main { padding: 0; }
+  }
+
+  @media (max-width: 700px) {
+    .header { padding: 20px; flex-direction: column; align-items: flex-start; }
+    .main { padding: 20px; }
+    .nav { padding: 0 16px; }
+    .form-row, .form-row.three, .meeting-grid, .bridge-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo-mark">🔗</div>
+    <div class="header-text">
+      <h1>Project Communication Planner</h1>
+
+    </div>
+  </div>
+  <div class="header-right">
+    <div id="autoSaveStatus" style="font-size:11px;color:rgba(255,255,255,0.45);white-space:nowrap">⬤ Not saved</div>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.25);font-weight:600" onclick="saveToFile()" title="Download your data as a save file">💾 Save</button>
+    <label class="btn btn-sm" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.25);cursor:pointer;margin:0;font-weight:600" title="Load a previously saved file">📂 Load<input type="file" accept=".json" onchange="loadFromFile(event)" style="display:none"></label>
+    <div class="phase-pill" id="currentPhaseLabel">📋 Setup</div>
+  </div>
+</div>
+
+<div class="nav" id="mainNav">
+  <div class="nav-tab active" onclick="showTab(0)" id="tab0"><span class="tab-dot active"></span> Project Setup</div>
+  <div class="nav-tab" onclick="showTab(1)" id="tab1"><span class="tab-dot"></span> Stakeholder Map</div>
+  <div class="nav-tab" onclick="showTab(2)" id="tab2"><span class="tab-dot"></span> Meeting Cadence</div>
+  <div class="nav-tab" onclick="showTab(3)" id="tab3"><span class="tab-dot"></span> Agenda Templates</div>
+  <div class="nav-tab" onclick="showTab(4)" id="tab4"><span class="tab-dot"></span> Tech ↔ Business Bridge</div>
+  <div class="nav-tab" onclick="showTab(5)" id="tab5"><span class="tab-dot"></span> Decision Log</div>
+  <div class="nav-tab" onclick="showTab(6)" id="tab6"><span class="tab-dot"></span> ✉️ Kickoff Emails</div>
+  <div class="nav-tab" onclick="showTab(7)" id="tab7"><span class="tab-dot"></span> Export</div>
+</div>
+
+<div class="main">
+
+  <!-- TAB 0: PROJECT SETUP -->
+  <div class="section active" id="section0">
+    <h2 class="section-title">Project Setup</h2>
+    <p class="section-sub">Enter the basics. This info will flow through the rest of the planner so your stakeholder map, meetings, and agenda templates are all pre-labeled for your project.</p>
+
+    <div class="card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Project Name</label>
+          <input type="text" id="projName" placeholder="e.g. Salesforce OTC Integration — Phase 2" oninput="syncProject()">
+        </div>
+        <div class="form-group">
+          <label>Project Type</label>
+          <select id="projType" onchange="syncProject()">
+            <option value="">Select type...</option>
+            <option value="salesforce">Salesforce Implementation</option>
+            <option value="integration">IT System Integration</option>
+            <option value="hybrid">Hybrid (Both)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row three">
+        <div class="form-group">
+          <label>Your Role</label>
+          <input type="text" id="projRole" placeholder="e.g. IT Implementation Lead" oninput="syncProject()">
+        </div>
+        <div class="form-group">
+          <label>Go-Live Target</label>
+          <input type="text" id="projGoLive" placeholder="e.g. Q3 2025 / Oct 15" oninput="syncProject()">
+        </div>
+        <div class="form-group">
+          <label>Current Phase</label>
+          <select id="projPhase" onchange="syncProject()">
+            <option value="planning">Planning / Discovery</option>
+            <option value="design">Design</option>
+            <option value="build">Build</option>
+            <option value="test">Testing / UAT</option>
+            <option value="cutover">Cutover Prep</option>
+            <option value="golive">Go-Live</option>
+            <option value="hypercare">Hypercare / Stabilization</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Project Description <span class="help" title="1-2 sentences on what this project does and who it affects">?</span></label>
+        <textarea id="projDesc" placeholder="e.g. Integrating Salesforce Sales Cloud with SAP OTC to automate order creation, eliminate manual entry, and give Customer Service real-time order visibility." oninput="syncProject()"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Primary Systems Involved</label>
+          <input type="text" id="projSystems" placeholder="e.g. Salesforce, SAP OTC, MuleSoft, EDI" oninput="syncProject()">
+        </div>
+        <div class="form-group">
+          <label>Business Division / Brand</label>
+          <input type="text" id="projBrand" placeholder="e.g. Writing Division, Consumer Products" oninput="syncProject()">
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>How this tool works:</strong> Fill in setup, then walk through each tab. The Stakeholder Map helps you figure out <em>who</em> belongs where. Meeting Cadence tells you <em>when</em> to start each meeting and <em>who</em> attends. Agenda Templates give you a starting agenda for each meeting type. The Tech ↔ Business Bridge gives you language and tactics to prevent communication breakdowns. The Decision Log tracks what needs an owner.
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="showTab(1)">Next: Map Your Stakeholders →</button>
+    </div>
+  </div>
+
+  <!-- TAB 1: STAKEHOLDER MAP -->
+  <div class="section" id="section1">
+    <h2 class="section-title">Stakeholder Map</h2>
+    <p class="section-sub">The single biggest mistake on implementations: over-including everyone in every meeting. Use this map to place people in the right tier — then stick to it.</p>
+
+    <div class="warn-box">
+      <strong>The rule of three tiers:</strong> <strong>Decide</strong> = attends all key meetings, signs off on decisions (max 3–5 people). <strong>Contribute</strong> = called in for their workstream, not every meeting. <strong>Informed</strong> = gets the status update email, not in the room.
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🎯 <span>Tier 1 — Decision Makers</span> <span class="card-badge badge-decide">DECIDE</span></div>
+        <span style="font-size:11px;color:var(--ink-muted)">Every key meeting · Sign-off authority · Max 3–5 people</span>
+      </div>
+      <table class="raci-table" id="decideTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Title / Team</th>
+            <th>What they own</th>
+            <th>Key ask from them</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="text" placeholder="VP Sales / IT Director..."></td>
+            <td><input type="text" placeholder="Budget, final go/no-go"></td>
+            <td><input type="text" placeholder="Weekly 15-min briefing"></td>
+            <td><button class="btn btn-sm btn-danger" onclick="removeRow(this)">✕</button></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="text" placeholder="Business Owner / PMO"></td>
+            <td><input type="text" placeholder="Scope decisions, UAT sign-off"></td>
+            <td><input type="text" placeholder="Attend steering meetings"></td>
+            <td><button class="btn btn-sm btn-danger" onclick="removeRow(this)">✕</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="addRow('decideTable', ['Name','Title / Team','What they own','Key ask from them'])">+ Add person</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔧 <span>Tier 2 — Active Contributors</span> <span class="card-badge badge-build">CONTRIBUTE</span></div>
+        <span style="font-size:11px;color:var(--ink-muted)">Workstream meetings · Technical sessions · Called when relevant</span>
+      </div>
+      <table class="raci-table" id="contributeTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Title / Team</th>
+            <th>Workstream</th>
+            <th>When to engage</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="text" placeholder="Salesforce Admin / SAP Lead"></td>
+            <td><input type="text" placeholder="Build, config, integration"></td>
+            <td><input type="text" placeholder="Build phase → Go-Live"></td>
+            <td><button class="btn btn-sm btn-danger" onclick="removeRow(this)">✕</button></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="text" placeholder="Business Analyst / CS Manager"></td>
+            <td><input type="text" placeholder="Requirements, UAT, training"></td>
+            <td><input type="text" placeholder="Design phase → UAT complete"></td>
+            <td><button class="btn btn-sm btn-danger" onclick="removeRow(this)">✕</button></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Name"></td>
+            <td><input type="text" placeholder="Data / Reporting Lead"></td>
+            <td><input type="text" placeholder="Data migration, validation"></td>
+            <td><input type="text" placeholder="Build phase → Go-Live"></td>
+            <td><button class="btn btn-sm btn-danger" onclick="removeRow(this)">✕</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="addRow('contributeTable', ['Name','Title / Team','Workstream','When to engage'])">+ Add person</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📬 <span>Tier 3 — Informed Stakeholders</span> <span class="card-badge badge-inform">INFORM</span></div>
+        <span style="font-size:11px;color:var(--ink-muted)">Status email only · No meeting invite · Stay aware without being pulled in</span>
+      </div>
+      <table class="raci-table" id="informTable">
+        <thead>
+          <tr>
+            <th>Name / Group</th>
+            <th>Title / Team</th>
+            <th>Why they care</th>
+            <th>How often to update</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="text" placeholder="Finance Team"></td>
+            <td><input type="text" placeholder="Finance / Accounting"></td>
+            <td><input type="text" placeholder="Budget impact, invoice timing"></td>
+            <td><input type="text" placeholder="Monthly summary"></td>
+            <td><button class="btn btn-sm btn-danger" onclick="removeRow(this)">✕</button></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="End User Community"></td>
+            <td><input type="text" placeholder="Sales Reps / CS Agents"></td>
+            <td><input type="text" placeholder="System change affects their workflow"></td>
+            <td><input type="text" placeholder="Bi-weekly update as go-live nears"></td>
+            <td><button class="btn btn-sm btn-danger" onclick="removeRow(this)">✕</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="addRow('informTable', ['Name / Group','Title / Team','Why they care','How often to update'])">+ Add person</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showTab(0)">← Back</button>
+      <button class="btn btn-primary" onclick="showTab(2)">Next: Build Meeting Cadence →</button>
+    </div>
+  </div>
+
+  <!-- TAB 2: MEETING CADENCE -->
+  <div class="section" id="section2">
+    <h2 class="section-title">Meeting Cadence</h2>
+    <p class="section-sub">The right meetings at the right time — not too many, not too few. Each meeting below has a clear purpose, the right attendees, and a recommended start point tied to your project phase.</p>
+
+    <div class="phase-bar">
+      <div class="phase-seg" onclick="filterPhase('all')" id="ps-all">All Phases</div>
+      <div class="phase-seg" onclick="filterPhase('planning')" id="ps-planning">Planning</div>
+      <div class="phase-seg" onclick="filterPhase('build')" id="ps-build">Build</div>
+      <div class="phase-seg" onclick="filterPhase('test')" id="ps-test">Test / UAT</div>
+      <div class="phase-seg" onclick="filterPhase('cutover')" id="ps-cutover">Cutover</div>
+      <div class="phase-seg active" onclick="filterPhase('all')" id="ps-hypercare">Post Go-Live</div>
+    </div>
+
+    <div class="meeting-grid" id="meetingGrid">
+
+      <div class="meeting-card" data-phase="planning build test cutover hypercare">
+        <div class="meeting-card-header">
+          <div class="meeting-icon" style="background:#f5f3ff">🏛️</div>
+          <div>
+            <div style="font-weight:700;font-size:13px">Steering Committee</div>
+            <div style="font-size:11px;color:var(--ink-muted)">Bi-weekly · 45–60 min</div>
+          </div>
+        </div>
+        <div class="meeting-card-body">
+          <div class="meeting-meta">
+            <span class="meta-tag">Tier 1 only</span>
+            <span class="meta-tag">Decision authority</span>
+            <span class="meta-tag">Executive sponsor chairs</span>
+          </div>
+          <div class="meeting-purpose">Escalations, decisions, scope changes, and go/no-go checkpoints. This is where things that are stalling get unblocked. Keep it tight — no deep technical discussion here.</div>
+          <div class="when-to-start">⏱ Start: Week 2 of project kickoff</div>
+          <div class="attendees-list">
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--purple)"></div>Executive Sponsor / Business Owner</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--purple)"></div>IT Lead / Project Manager</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--purple)"></div>Key Business Decision Maker</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--border)"></div><em>Optional: Finance if budget decisions pending</em></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meeting-card" data-phase="planning build test cutover hypercare">
+        <div class="meeting-card-header">
+          <div class="meeting-icon" style="background:#eff6ff">📊</div>
+          <div>
+            <div style="font-weight:700;font-size:13px">Weekly Project Status</div>
+            <div style="font-size:11px;color:var(--ink-muted)">Weekly · 30 min</div>
+          </div>
+        </div>
+        <div class="meeting-card-body">
+          <div class="meeting-meta">
+            <span class="meta-tag">Tier 1 + Tier 2</span>
+            <span class="meta-tag">Structured agenda</span>
+            <span class="meta-tag">Status report distributed 1hr before</span>
+          </div>
+          <div class="meeting-purpose">Progress against milestones, risks and issues, decisions needed. Tier 3 stakeholders get the written summary, not an invite. Run this on the same day/time every week — consistency matters.</div>
+          <div class="when-to-start">⏱ Start: Week 1 of active build (not kickoff)</div>
+          <div class="attendees-list">
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--blue)"></div>Project Manager / IT Lead</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--blue)"></div>Business Owner or delegate</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--blue)"></div>Workstream leads (Tier 2)</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--border)"></div><em>Not: every developer, every end user</em></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meeting-card" data-phase="build test">
+        <div class="meeting-card-header">
+          <div class="meeting-icon" style="background:#f0fdf4">⚙️</div>
+          <div>
+            <div style="font-weight:700;font-size:13px">Technical Working Session</div>
+            <div style="font-size:11px;color:var(--ink-muted)">Weekly or as-needed · 60–90 min</div>
+          </div>
+        </div>
+        <div class="meeting-card-body">
+          <div class="meeting-meta">
+            <span class="meta-tag">Tier 2 technical only</span>
+            <span class="meta-tag">Deep-dive format</span>
+            <span class="meta-tag">Decisions documented in writing</span>
+          </div>
+          <div class="meeting-purpose">Where developers, architects, and integration leads work through design decisions, blockers, and technical specs. Business stakeholders are NOT in this meeting — insights get translated to plain language in the status update.</div>
+          <div class="when-to-start">⏱ Start: Design phase · Wind down after SIT complete</div>
+          <div class="attendees-list">
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--green)"></div>Developers / Architects</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--green)"></div>Integration / middleware leads</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--green)"></div>Data / migration team</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--border)"></div><em>IT PM bridges to business after</em></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meeting-card" data-phase="test">
+        <div class="meeting-card-header">
+          <div class="meeting-icon" style="background:#fff7ed">✅</div>
+          <div>
+            <div style="font-weight:700;font-size:13px">UAT / Business Validation</div>
+            <div style="font-size:11px;color:var(--ink-muted)">2x per week during UAT · 60 min</div>
+          </div>
+        </div>
+        <div class="meeting-card-body">
+          <div class="meeting-meta">
+            <span class="meta-tag">Business testers + IT support</span>
+            <span class="meta-tag">Test scripts required</span>
+            <span class="meta-tag">Defect triage included</span>
+          </div>
+          <div class="meeting-purpose">Business users execute test scripts and surface defects. IT team is present to answer questions and triage issues in real time. Outcome: a signed defect log and go/no-go recommendation.</div>
+          <div class="when-to-start">⏱ Start: First day of UAT window</div>
+          <div class="attendees-list">
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--amber)"></div>Business testers / super-users</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--amber)"></div>Business Analyst (facilitates)</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--amber)"></div>IT dev on standby for defects</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meeting-card" data-phase="planning build test cutover">
+        <div class="meeting-card-header">
+          <div class="meeting-icon" style="background:#fdf4ff">📣</div>
+          <div>
+            <div style="font-weight:700;font-size:13px">Business Readiness Check-In</div>
+            <div style="font-size:11px;color:var(--ink-muted)">Monthly early · Bi-weekly near go-live · 30 min</div>
+          </div>
+        </div>
+        <div class="meeting-card-body">
+          <div class="meeting-meta">
+            <span class="meta-tag">Business Owner + Change Lead</span>
+            <span class="meta-tag">Non-technical</span>
+            <span class="meta-tag">No IT jargon</span>
+          </div>
+          <div class="meeting-purpose">Tracks business-side readiness: training completion, process documentation, user adoption readiness, communication to end users. Separate from the technical project status — this is about the people side.</div>
+          <div class="when-to-start">⏱ Start: End of Design phase</div>
+          <div class="attendees-list">
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--purple)"></div>Business Owner / Change Manager</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--purple)"></div>Training lead</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--purple)"></div>IT PM (as translator, not presenter)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meeting-card" data-phase="cutover hypercare">
+        <div class="meeting-card-header">
+          <div class="meeting-icon" style="background:#fff1f2">🚀</div>
+          <div>
+            <div style="font-weight:700;font-size:13px">Go/No-Go &amp; Cutover War Room</div>
+            <div style="font-size:11px;color:var(--ink-muted)">Daily in cutover week · 15–30 min standup</div>
+          </div>
+        </div>
+        <div class="meeting-card-body">
+          <div class="meeting-meta">
+            <span class="meta-tag">All tiers · Short &amp; focused</span>
+            <span class="meta-tag">Runbook-driven</span>
+            <span class="meta-tag">Decision escalation same-day</span>
+          </div>
+          <div class="meeting-purpose">Daily standup against the cutover runbook. Each task owner confirms status: done, in progress, or blocked. Blockers are escalated to the decision maker immediately — not held for next day.</div>
+          <div class="when-to-start">⏱ Start: 1 week before go-live</div>
+          <div class="attendees-list">
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--red)"></div>All workstream leads</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--red)"></div>Business Owner</div>
+            <div class="attendee-row"><div class="attendee-dot" style="background:var(--red)"></div>Executive Sponsor on standby</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showTab(1)">← Back</button>
+      <button class="btn btn-primary" onclick="showTab(3)">Next: Agenda Templates →</button>
+    </div>
+  </div>
+
+  <!-- TAB 3: AGENDA TEMPLATES -->
+  <div class="section" id="section3">
+    <h2 class="section-title">Agenda Templates</h2>
+    <p class="section-sub">Pre-built agendas for each meeting type. The secret to short, effective meetings is a distributed agenda and a timekeeper. Use these as your starting point.</p>
+
+    <div class="phase-bar">
+      <div class="phase-seg active" onclick="showAgenda('steering')" id="ag-steering">Steering Cmte</div>
+      <div class="phase-seg" onclick="showAgenda('status')" id="ag-status">Weekly Status</div>
+      <div class="phase-seg" onclick="showAgenda('technical')" id="ag-technical">Technical Session</div>
+      <div class="phase-seg" onclick="showAgenda('uat')" id="ag-uat">UAT Session</div>
+      <div class="phase-seg" onclick="showAgenda('readiness')" id="ag-readiness">Business Readiness</div>
+    </div>
+
+    <div id="agendaSteering" class="agenda-section">
+      <div class="info-box"><strong>Steering Committee</strong> — Distribute the status report 1 hour before. Open with the scorecard. Decisions only — no problem-solving in this room. If something needs investigation, assign it offline.</div>
+      <div class="agenda-items">
+        <div class="agenda-item"><div class="agenda-num">1</div><div class="agenda-content"><div class="agenda-title">Project Scorecard Review</div><div class="agenda-detail">Status by workstream (Green / Yellow / Red). PM presents. No discussion on green items.</div><span class="agenda-owner">📋 PM / IT Lead</span></div><div class="agenda-mins">5 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">2</div><div class="agenda-content"><div class="agenda-title">Milestone Progress vs Plan</div><div class="agenda-detail">Where are we against the timeline? What's moved? What's at risk?</div><span class="agenda-owner">📋 PM</span></div><div class="agenda-mins">5 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">3</div><div class="agenda-content"><div class="agenda-title">Decisions Required</div><div class="agenda-detail">Pre-listed decisions with a recommended answer and the owner. Steering committee says yes, no, or assigns to someone with a deadline.</div><span class="agenda-owner">📋 PM · Decision Owners</span></div><div class="agenda-mins">15 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">4</div><div class="agenda-content"><div class="agenda-title">Escalations &amp; Blockers</div><div class="agenda-detail">Items that are stuck and need executive action: resource conflicts, scope disputes, vendor issues.</div><span class="agenda-owner">📋 Workstream Leads</span></div><div class="agenda-mins">10 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">5</div><div class="agenda-content"><div class="agenda-title">Next Period Preview</div><div class="agenda-detail">What's happening in the next 2 weeks that the steering committee should be aware of or prepare for?</div><span class="agenda-owner">📋 PM</span></div><div class="agenda-mins">5 min</div></div>
+      </div>
+    </div>
+
+    <div id="agendaStatus" class="agenda-section" style="display:none">
+      <div class="info-box"><strong>Weekly Status Meeting</strong> — This is the heartbeat of the project. Keep it to 30 minutes. Anyone who has nothing to report can skip. Send the written summary to Tier 3 the same day.</div>
+      <div class="agenda-items">
+        <div class="agenda-item"><div class="agenda-num">1</div><div class="agenda-content"><div class="agenda-title">Quick Wins &amp; Completions</div><div class="agenda-detail">What got done this week? Start positive — it sets the tone and acknowledges work.</div><span class="agenda-owner">📋 All leads, round-robin</span></div><div class="agenda-mins">5 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">2</div><div class="agenda-content"><div class="agenda-title">Milestone Tracker Review</div><div class="agenda-detail">Traffic-light review of each milestone. Any that moved? Any that are now at risk?</div><span class="agenda-owner">📋 PM</span></div><div class="agenda-mins">8 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">3</div><div class="agenda-content"><div class="agenda-title">Risks &amp; Issues — Updates</div><div class="agenda-detail">Open items only. Not every risk on the log — just the ones with movement or that need input.</div><span class="agenda-owner">📋 Risk owners</span></div><div class="agenda-mins">8 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">4</div><div class="agenda-content"><div class="agenda-title">Decisions &amp; Actions Needed</div><div class="agenda-detail">Anything that needs a decision or is waiting on someone. State the ask, the owner, and the deadline.</div><span class="agenda-owner">📋 PM</span></div><div class="agenda-mins">5 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">5</div><div class="agenda-content"><div class="agenda-title">Next Week Focus</div><div class="agenda-detail">Each workstream states their top 1–2 priorities for the coming week.</div><span class="agenda-owner">📋 All leads</span></div><div class="agenda-mins">4 min</div></div>
+      </div>
+    </div>
+
+    <div id="agendaTechnical" class="agenda-section" style="display:none">
+      <div class="info-box"><strong>Technical Working Session</strong> — Go deep. No executives. Decisions made here get documented and translated for business stakeholders by the IT PM afterward.</div>
+      <div class="agenda-items">
+        <div class="agenda-item"><div class="agenda-num">1</div><div class="agenda-content"><div class="agenda-title">Open Items from Last Session</div><div class="agenda-detail">Quick check: are last week's action items resolved? Move on immediately if yes.</div><span class="agenda-owner">📋 Tech lead</span></div><div class="agenda-mins">5 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">2</div><div class="agenda-content"><div class="agenda-title">Design / Architecture Topic</div><div class="agenda-detail">Pre-defined topic (circulated in advance). Deep discussion, whiteboard if needed. Aim for a decision by end of this block.</div><span class="agenda-owner">📋 Architect / dev lead</span></div><div class="agenda-mins">30 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">3</div><div class="agenda-content"><div class="agenda-title">Build Blockers</div><div class="agenda-detail">What's blocking development? Missing specs, environment access, dependency on another team?</div><span class="agenda-owner">📋 All devs</span></div><div class="agenda-mins">15 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">4</div><div class="agenda-content"><div class="agenda-title">Integration / Data Issues</div><div class="agenda-detail">Field mapping gaps, data quality, error handling edge cases. Document decisions in the design spec.</div><span class="agenda-owner">📋 Integration lead</span></div><div class="agenda-mins">15 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">5</div><div class="agenda-content"><div class="agenda-title">Action Items &amp; Owners</div><div class="agenda-detail">Explicit owners and due dates before leaving the room. IT PM captures for translation to business status.</div><span class="agenda-owner">📋 IT PM</span></div><div class="agenda-mins">5 min</div></div>
+      </div>
+    </div>
+
+    <div id="agendaUat" class="agenda-section" style="display:none">
+      <div class="info-box"><strong>UAT Session</strong> — Business users are in the driver's seat here. IT facilitates, not leads. The goal is real users finding real gaps — before go-live.</div>
+      <div class="agenda-items">
+        <div class="agenda-item"><div class="agenda-num">1</div><div class="agenda-content"><div class="agenda-title">Session Scope &amp; Scripts</div><div class="agenda-detail">Which test scripts are we covering today? Confirm everyone has access and knows which scenario they own.</div><span class="agenda-owner">📋 Business Analyst</span></div><div class="agenda-mins">5 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">2</div><div class="agenda-content"><div class="agenda-title">Test Execution</div><div class="agenda-detail">Business testers run their scripts. IT team observes and answers questions. Document: pass, fail with detail, or question.</div><span class="agenda-owner">📋 Business testers</span></div><div class="agenda-mins">40 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">3</div><div class="agenda-content"><div class="agenda-title">Defect Triage</div><div class="agenda-detail">For each failed item: is it a real defect, a training issue, or a misunderstood requirement? Assign severity (P1/P2/P3) on the spot.</div><span class="agenda-owner">📋 IT Lead + BA</span></div><div class="agenda-mins">10 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">4</div><div class="agenda-content"><div class="agenda-title">Next Session Prep</div><div class="agenda-detail">Confirm next session date, which scripts are up next, and any system fixes expected before then.</div><span class="agenda-owner">📋 BA + IT PM</span></div><div class="agenda-mins">5 min</div></div>
+      </div>
+    </div>
+
+    <div id="agendaReadiness" class="agenda-section" style="display:none">
+      <div class="info-box"><strong>Business Readiness Check-In</strong> — Keep it non-technical. This meeting is about people, process, and change — not the system. Outcome: a business readiness score the team agrees on.</div>
+      <div class="agenda-items">
+        <div class="agenda-item"><div class="agenda-num">1</div><div class="agenda-content"><div class="agenda-title">Training Status</div><div class="agenda-detail">How many users trained? Is the training material complete? Any feedback from early sessions?</div><span class="agenda-owner">📋 Training Lead</span></div><div class="agenda-mins">8 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">2</div><div class="agenda-content"><div class="agenda-title">Process &amp; SOP Readiness</div><div class="agenda-detail">Are updated processes documented? Do teams know what's changing on day 1? Any process gaps identified?</div><span class="agenda-owner">📋 Business Owner / BA</span></div><div class="agenda-mins">8 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">3</div><div class="agenda-content"><div class="agenda-title">End User Communication Plan</div><div class="agenda-detail">Have we told people what's changing and when? What's the message for go-live week? Who sends it?</div><span class="agenda-owner">📋 Change Lead / Comms</span></div><div class="agenda-mins">8 min</div></div>
+        <div class="agenda-item"><div class="agenda-num">4</div><div class="agenda-content"><div class="agenda-title">Risks to Adoption</div><div class="agenda-detail">Who's not bought in? Any teams pushing back? What's the mitigation?</div><span class="agenda-owner">📋 Business Owner</span></div><div class="agenda-mins">6 min</div></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showTab(2)">← Back</button>
+      <button class="btn btn-primary" onclick="showTab(4)">Next: Tech ↔ Business Bridge →</button>
+    </div>
+  </div>
+
+  <!-- TAB 4: BRIDGE GUIDE -->
+  <div class="section" id="section4">
+    <h2 class="section-title">Tech ↔ Business Bridge</h2>
+    <p class="section-sub">The #1 cause of project friction isn't technology — it's translation failure. Here's how to bridge the gap between what IT is building and what the business needs to understand.</p>
+
+    <div class="bridge-grid">
+
+      <div class="bridge-card">
+        <h3>🔄 Translation Guide — Say This, Not That</h3>
+        <div class="bridge-item"><div class="bridge-arrow">→</div><div class="bridge-text"><strong>Instead of:</strong> "We're configuring the API endpoint and validating the JSON payload schema."<br><strong>Say:</strong> "We're connecting Salesforce and SAP so orders flow automatically — no manual entry needed."</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">→</div><div class="bridge-text"><strong>Instead of:</strong> "There's a governor limit issue causing SOQL query failures in bulk."<br><strong>Say:</strong> "When we process large batches of orders, the system hits a performance limit. We're fixing it now — no impact to go-live."</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">→</div><div class="bridge-text"><strong>Instead of:</strong> "UAT scripts need to cover the P2P integration edge cases."<br><strong>Say:</strong> "Business testers need to try scenarios where orders have special pricing or split shipments — that's where issues tend to hide."</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">→</div><div class="bridge-text"><strong>Instead of:</strong> "We're in hypercare with elevated P1 SLAs."<br><strong>Say:</strong> "For the first 30 days after go-live, IT is on-call with a 2-hour response time for any critical issues."</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">→</div><div class="bridge-text"><strong>Instead of:</strong> "Cutover requires a maintenance window with system downtime."<br><strong>Say:</strong> "On go-live night, the system will be unavailable for approximately 4 hours. Here's the timeline and who to contact."</div></div>
+      </div>
+
+      <div class="bridge-card">
+        <h3>🎯 When to Involve Business Stakeholders</h3>
+        <div class="bridge-item"><div class="bridge-arrow">✅</div><div class="bridge-text"><strong>Involve business early for:</strong> defining requirements, reviewing process flows, prioritizing features, and confirming data accuracy during design. Their input here prevents expensive changes later.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">⚠️</div><div class="bridge-text"><strong>Don't pull them into:</strong> technical architecture decisions, code reviews, or debugging sessions. Translate the outcome, not the process. "We found and fixed an issue" is enough.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">✅</div><div class="bridge-text"><strong>Business owns UAT:</strong> They define what "correct" looks like. IT supports, not leads. If business users don't test it, they haven't accepted it.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">⚠️</div><div class="bridge-text"><strong>Don't surprise them at go-live:</strong> If something changed from the original design, tell them early — even if IT resolved it. Surprises at go-live destroy trust.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">✅</div><div class="bridge-text"><strong>Use demos, not documents:</strong> A 10-minute demo of the working system does more for business buy-in than a 20-page spec. Schedule demos at end of each build sprint.</div></div>
+      </div>
+
+      <div class="bridge-card">
+        <h3>🚦 Decision Ownership — Who Decides What</h3>
+        <div class="bridge-item"><div class="bridge-arrow">IT decides:</div><div class="bridge-text">Technical architecture, integration patterns, data model design, development approach, tooling choices, environment strategy.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">Business decides:</div><div class="bridge-text">Process changes, what "correct" data looks like, which features are in-scope, training approach, go-live timing relative to business calendar.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">Joint decision:</div><div class="bridge-text">Scope changes that affect both timeline and business process, UAT pass/fail and go-live approval, cutover date, and post-go-live support model.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">Escalate when:</div><div class="bridge-text">IT and business disagree on scope, a decision has been open more than 5 business days, or the decision affects the go-live date. Don't let it sit.</div></div>
+      </div>
+
+      <div class="bridge-card">
+        <h3>📧 Status Communication by Audience</h3>
+        <div class="bridge-item"><div class="bridge-arrow">Executive / Tier 1:</div><div class="bridge-text">3 bullets max. Overall status (color), top risk, what they need to do. No technical detail. Send weekly — same day, same time.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">Business Stakeholders / Tier 2:</div><div class="bridge-text">Milestone progress, what's changing for them, what you need from them this week. Keep it outcome-focused, not task-focused.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">Informed / Tier 3:</div><div class="bridge-text">Monthly newsletter-style update. "Here's where we are, here's what's coming." No action required from them. Keeps people from feeling blindsided.</div></div>
+        <div class="bridge-item"><div class="bridge-arrow">End Users:</div><div class="bridge-text">Bi-weekly as go-live nears. Focus on: what's changing for you, when, and where to get help. Use business language, not project language.</div></div>
+      </div>
+
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showTab(3)">← Back</button>
+      <button class="btn btn-primary" onclick="showTab(5)">Next: Decision Log →</button>
+    </div>
+  </div>
+
+  <!-- TAB 5: DECISION LOG -->
+  <div class="section" id="section5">
+    <h2 class="section-title">Decision Log</h2>
+    <p class="section-sub">Every stalled project has decisions that nobody owns. This log makes ownership explicit. Review it weekly in your status meeting — anything open more than 5 days gets escalated.</p>
+
+    <div class="warn-box">
+      <strong>The 5-day rule:</strong> If a decision has been open for more than 5 business days with no resolution, it gets escalated to the steering committee in the next meeting. Add a note in the Escalate column.
+    </div>
+
+    <table class="decision-table" id="decisionLogTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Decision Needed</th>
+          <th>Context / Options</th>
+          <th>Owner</th>
+          <th>Date Raised</th>
+          <th>Deadline</th>
+          <th>Status</th>
+          <th>Outcome</th>
+        </tr>
+      </thead>
+      <tbody id="decisionLogBody">
+        <tr>
+          <td>1</td>
+          <td><input type="text" placeholder="e.g. Should we go live on Oct 15 or delay to Oct 22?"></td>
+          <td><input type="text" placeholder="Option A: Oct 15 (tight but doable). Option B: Oct 22 (safer)."></td>
+          <td><input type="text" placeholder="Business Owner"></td>
+          <td><input type="text" placeholder="Today"></td>
+          <td><input type="text" placeholder="This Friday"></td>
+          <td><select onchange="styleStatus(this)"><option value="open">🟡 Open</option><option value="decided">🟢 Decided</option><option value="escalated">🔴 Escalated</option></select></td>
+          <td><input type="text" placeholder="TBD"></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="text" placeholder="e.g. Who owns UAT sign-off for Customer Service?"></td>
+          <td><input type="text" placeholder="CS Manager or VP CS?"></td>
+          <td><input type="text" placeholder="VP Customer Service"></td>
+          <td><input type="text" placeholder=""></td>
+          <td><input type="text" placeholder=""></td>
+          <td><select onchange="styleStatus(this)"><option value="open">🟡 Open</option><option value="decided">🟢 Decided</option><option value="escalated">🔴 Escalated</option></select></td>
+          <td><input type="text" placeholder=""></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="btn-row">
+      <button class="btn btn-outline btn-sm" onclick="addDecision()">+ Add decision</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showTab(4)">← Back</button>
+      <button class="btn btn-primary" onclick="showTab(6)">Next: Kickoff Emails →</button>
+    </div>
+  </div>
+
+  <!-- TAB 6: KICKOFF EMAIL GENERATOR -->
+  <div class="section" id="section6">
+    <h2 class="section-title">Kickoff Email Generator</h2>
+    <p class="section-sub">Three pre-drafted emails for your project kickoff — one for executives, one for your project team, and one for end users. Each pulls from your project setup and stakeholder map. Edit to fit your voice before sending.</p>
+
+    <div class="info-box"><strong>How this works:</strong> Click Generate for any email type. The draft pulls your project name, go-live date, systems, and stakeholder tiers automatically. Edit the output directly before copying.</div>
+
+    <div class="phase-bar" style="margin-bottom:20px">
+      <div class="phase-seg active" onclick="showEmail('exec')" id="em-exec">📊 Executive Announcement</div>
+      <div class="phase-seg" onclick="showEmail('team')" id="em-team">⚙️ Project Team Kickoff</div>
+      <div class="phase-seg" onclick="showEmail('enduser')" id="em-enduser">👥 End User Awareness</div>
+    </div>
+
+    <!-- EXEC EMAIL -->
+    <div id="emailExec">
+      <div class="warn-box"><strong>Audience:</strong> Tier 1 decision-makers, executive sponsor, leadership. <strong>Tone:</strong> Brief, outcome-focused, no jargon. <strong>Goal:</strong> Awareness + secure their commitment to be available for decisions.</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Executive Announcement Email</div>
+          <button class="btn btn-sm btn-primary" onclick="generateEmail('exec')">Generate Draft →</button>
+        </div>
+        <div style="margin-bottom:12px">
+          <label>Subject Line</label>
+          <input type="text" id="emailExecSubject" placeholder="Click Generate to populate..." readonly style="background:var(--surface)">
+        </div>
+        <div>
+          <label>Email Body <span style="font-size:11px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-muted)">(edit directly)</span></label>
+          <textarea id="emailExecBody" rows="16" placeholder="Click Generate to populate your draft..." readonly style="background:var(--surface);font-size:13px;line-height:1.7"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-outline btn-sm" onclick="unlockEmail('exec')">✏️ Edit</button>
+          <button class="btn btn-primary btn-sm" onclick="copyEmail('exec')">📋 Copy Email</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM EMAIL -->
+    <div id="emailTeam" style="display:none">
+      <div class="warn-box"><strong>Audience:</strong> Tier 2 contributors — your IT team, BAs, integration leads, business workstream owners. <strong>Tone:</strong> Direct, operational, sets expectations clearly. <strong>Goal:</strong> Align everyone on roles, cadence, and what "good" looks like on this project.</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Project Team Kickoff Email</div>
+          <button class="btn btn-sm btn-primary" onclick="generateEmail('team')">Generate Draft →</button>
+        </div>
+        <div style="margin-bottom:12px">
+          <label>Subject Line</label>
+          <input type="text" id="emailTeamSubject" placeholder="Click Generate to populate..." readonly style="background:var(--surface)">
+        </div>
+        <div>
+          <label>Email Body <span style="font-size:11px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-muted)">(edit directly)</span></label>
+          <textarea id="emailTeamBody" rows="20" placeholder="Click Generate to populate your draft..." readonly style="background:var(--surface);font-size:13px;line-height:1.7"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-outline btn-sm" onclick="unlockEmail('team')">✏️ Edit</button>
+          <button class="btn btn-primary btn-sm" onclick="copyEmail('team')">📋 Copy Email</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- END USER EMAIL -->
+    <div id="emailEnduser" style="display:none">
+      <div class="warn-box"><strong>Audience:</strong> Tier 3 — end users, affected teams, people whose workflow will change. <strong>Tone:</strong> Plain language, empathetic, reassuring. Zero technical jargon. <strong>Goal:</strong> Early awareness so go-live isn't a surprise. Answer "what does this mean for me?"</div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">End User Awareness Email</div>
+          <button class="btn btn-sm btn-primary" onclick="generateEmail('enduser')">Generate Draft →</button>
+        </div>
+        <div style="margin-bottom:12px">
+          <label>Subject Line</label>
+          <input type="text" id="emailEnduserSubject" placeholder="Click Generate to populate..." readonly style="background:var(--surface)">
+        </div>
+        <div>
+          <label>Email Body <span style="font-size:11px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-muted)">(edit directly)</span></label>
+          <textarea id="emailEnduserBody" rows="18" placeholder="Click Generate to populate your draft..." readonly style="background:var(--surface);font-size:13px;line-height:1.7"></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-outline btn-sm" onclick="unlockEmail('enduser')">✏️ Edit</button>
+          <button class="btn btn-primary btn-sm" onclick="copyEmail('enduser')">📋 Copy Email</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showTab(5)">← Back</button>
+      <button class="btn btn-primary" onclick="showTab(7)">Next: Export →</button>
+    </div>
+  </div>
+
+  <!-- TAB 7: EXPORT -->
+  <div class="section" id="section7">
+    <h2 class="section-title">Export &amp; Share</h2>
+    <p class="section-sub">Generate a ready-to-share project communication plan. Copy it, paste it into Confluence, email it to your team, or save it as a starting point for every new project.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📄 Project Communication Plan — Preview</div>
+        <button class="btn btn-sm btn-primary" onclick="generateExport()">Generate →</button>
+      </div>
+      <div id="exportPreview" style="color:var(--ink-muted);font-size:13px;padding:8px 0">Click Generate to build your exportable plan based on what you've entered.</div>
+    </div>
+
+    <div class="output-panel" id="exportOutput" style="display:none"></div>
+
+    <div class="btn-row" id="exportActions" style="display:none">
+      <button class="btn btn-primary" onclick="copyExport()">📋 Copy to Clipboard</button>
+      <button class="btn btn-outline" onclick="window.print()">🖨️ Print / Save PDF</button>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="showTab(6)">← Back</button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+  let currentTab = 0;
+  const tabCount = 8;
+  let autoSaveTimer = null;
+
+  // ── TAB NAVIGATION ──────────────────────────────────────────
+  function showTab(n) {
+    for (let i = 0; i < tabCount; i++) {
+      const s = document.getElementById('section' + i);
+      const t = document.getElementById('tab' + i);
+      if (s) s.classList.toggle('active', i === n);
+      if (t) {
+        t.classList.toggle('active', i === n);
+        const dot = t.querySelector('.tab-dot');
+        if (dot) {
+          dot.classList.remove('active', 'done');
+          if (i === n) dot.classList.add('active');
+          else if (i < n) dot.classList.add('done');
+        }
+      }
+    }
+    currentTab = n;
+    window.scrollTo(0, 0);
+  }
+
+  function syncProject() {
+    const name = document.getElementById('projName').value || 'Your Project';
+    document.getElementById('currentPhaseLabel').textContent = '📋 ' + (name.length > 28 ? name.substring(0, 26) + '…' : name);
+    scheduleAutoSave();
+  }
+
+  // ── AUTO-SAVE (localStorage) ─────────────────────────────────
+  function scheduleAutoSave() {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      try {
+        const data = collectAllData();
+        localStorage.setItem('pcp_autosave', JSON.stringify(data));
+        const el = document.getElementById('autoSaveStatus');
+        el.textContent = '✔ Saved ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        el.style.color = 'rgba(255,255,255,0.55)';
+      } catch(e) {}
+    }, 1200);
+  }
+
+  function collectAllData() {
+    // Simple fields
+    const fields = ['projName','projType','projRole','projGoLive','projPhase','projDesc','projSystems','projBrand'];
+    const simple = {};
+    fields.forEach(id => { const el = document.getElementById(id); if(el) simple[id] = el.value; });
+
+    // Tables
+    const tables = ['decideTable','contributeTable','informTable','decisionLogBody'];
+    const tableData = {};
+    tables.forEach(id => {
+      const tbody = document.getElementById(id) || document.querySelector('#'+id+' tbody');
+      if (!tbody) return;
+      const rows = [];
+      tbody.querySelectorAll('tr').forEach(tr => {
+        const cells = [];
+        tr.querySelectorAll('input, select').forEach(el => cells.push({tag: el.tagName, value: el.value}));
+        rows.push(cells);
+      });
+      tableData[id] = rows;
+    });
+
+    // Emails (if edited)
+    const emails = {};
+    ['Exec','Team','Enduser'].forEach(k => {
+      const subj = document.getElementById('email'+k+'Subject');
+      const body = document.getElementById('email'+k+'Body');
+      if (subj && body) emails[k] = {subject: subj.value, body: body.value};
+    });
+
+    return { v: 1, ts: Date.now(), simple, tableData, emails };
+  }
+
+  function restoreAllData(data) {
+    if (!data || data.v !== 1) return;
+    // Simple fields
+    Object.entries(data.simple || {}).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+    // Tables
+    Object.entries(data.tableData || {}).forEach(([id, rows]) => {
+      const tbody = document.getElementById(id) || document.querySelector('#'+id+' tbody');
+      if (!tbody) return;
+      // Clear existing rows
+      tbody.innerHTML = '';
+      rows.forEach(cells => {
+        const tr = document.createElement('tr');
+        cells.forEach(cell => {
+          const td = document.createElement('td');
+          const el = document.createElement(cell.tag.toLowerCase());
+          if (cell.tag === 'INPUT') { el.type = 'text'; el.value = cell.value; }
+          if (cell.tag === 'SELECT') {
+            // Rebuild decision status select
+            [['open','🟡 Open'],['decided','🟢 Decided'],['escalated','🔴 Escalated']].forEach(([v,t]) => {
+              const opt = document.createElement('option');
+              opt.value = v; opt.textContent = t;
+              if (v === cell.value) opt.selected = true;
+              el.appendChild(opt);
+            });
+            el.onchange = function() { styleStatus(this); };
+          }
+          td.appendChild(el);
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    });
+    // Emails
+    Object.entries(data.emails || {}).forEach(([k, vals]) => {
+      const subj = document.getElementById('email'+k+'Subject');
+      const body = document.getElementById('email'+k+'Body');
+      if (subj && vals.subject) { subj.value = vals.subject; subj.readOnly = false; subj.style.background = ''; }
+      if (body && vals.body) { body.value = vals.body; body.readOnly = false; body.style.background = ''; }
+    });
+    syncProject();
+  }
+
+  // ── SAVE TO FILE ─────────────────────────────────────────────
+  function saveToFile() {
+    const data = collectAllData();
+    const name = document.getElementById('projName').value || 'project';
+    const slug = name.replace(/[^a-z0-9]/gi,'_').toLowerCase().slice(0,30);
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pcp_' + slug + '_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    const el = document.getElementById('autoSaveStatus');
+    el.textContent = '✔ File saved';
+    setTimeout(() => { el.textContent = '✔ Saved'; }, 2500);
+  }
+
+  // ── LOAD FROM FILE ───────────────────────────────────────────
+  function loadFromFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        restoreAllData(data);
+        const el = document.getElementById('autoSaveStatus');
+        el.textContent = '✔ Loaded ' + file.name;
+        el.style.color = '#86efac';
+        setTimeout(() => { el.style.color = 'rgba(255,255,255,0.55)'; el.textContent = '✔ Saved'; }, 3000);
+      } catch(err) {
+        alert('Could not load file — make sure it\'s a valid .json save from this tool.');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  // ── LISTEN FOR CHANGES ───────────────────────────────────────
+  document.addEventListener('input', () => scheduleAutoSave());
+  document.addEventListener('change', () => scheduleAutoSave());
+
+  // ── STAKEHOLDER TABLES ───────────────────────────────────────
+  function addRow(tableId, placeholders) {
+    const tbody = document.querySelector('#' + tableId + ' tbody');
+    const tr = document.createElement('tr');
+    placeholders.forEach(ph => {
+      const td = document.createElement('td');
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.placeholder = ph;
+      td.appendChild(inp);
+      tr.appendChild(td);
+    });
+    const tdBtn = document.createElement('td');
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-sm btn-danger';
+    btn.textContent = '✕';
+    btn.onclick = function() { removeRow(this); };
+    tdBtn.appendChild(btn);
+    tr.appendChild(tdBtn);
+    tbody.appendChild(tr);
+  }
+
+  function removeRow(btn) { btn.closest('tr').remove(); scheduleAutoSave(); }
+
+  // ── MEETING CADENCE ──────────────────────────────────────────
+  function filterPhase(phase) {
+    document.querySelectorAll('[id^="ps-"]').forEach(el => el.classList.remove('active'));
+    document.getElementById('ps-' + phase)?.classList.add('active');
+    document.querySelectorAll('.meeting-card').forEach(card => {
+      card.style.display = (phase === 'all' || card.dataset.phase?.includes(phase)) ? '' : 'none';
+    });
+  }
+
+  // ── AGENDA TEMPLATES ─────────────────────────────────────────
+  function showAgenda(key) {
+    ['steering','status','technical','uat','readiness'].forEach(k => {
+      const el = document.getElementById('agenda' + k.charAt(0).toUpperCase() + k.slice(1));
+      if (el) el.style.display = k === key ? '' : 'none';
+      const tab = document.getElementById('ag-' + k);
+      if (tab) tab.classList.toggle('active', k === key);
+    });
+  }
+
+  // ── DECISION LOG ─────────────────────────────────────────────
+  let decisionCount = 2;
+  function addDecision() {
+    decisionCount++;
+    const tbody = document.getElementById('decisionLogBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${decisionCount}</td>
+      <td><input type="text" placeholder="Decision needed..."></td>
+      <td><input type="text" placeholder="Options / context..."></td>
+      <td><input type="text" placeholder="Owner"></td>
+      <td><input type="text" placeholder="Date"></td>
+      <td><input type="text" placeholder="Deadline"></td>
+      <td><select onchange="styleStatus(this)"><option value="open">🟡 Open</option><option value="decided">🟢 Decided</option><option value="escalated">🔴 Escalated</option></select></td>
+      <td><input type="text" placeholder="Outcome..."></td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  function styleStatus(sel) {}
+
+  // ── TABLE DATA HELPER ────────────────────────────────────────
+  function getTableData(tableId) {
+    const rows = [];
+    const tbody = document.getElementById(tableId) || document.querySelector('#' + tableId + ' tbody');
+    if (!tbody) return rows;
+    tbody.querySelectorAll('tr').forEach(tr => {
+      const cells = [];
+      tr.querySelectorAll('input, select').forEach(el => cells.push(el.value || '—'));
+      if (cells.some(c => c && c !== '—')) rows.push(cells);
+    });
+    return rows;
+  }
+
+  // ── KICKOFF EMAIL GENERATOR ──────────────────────────────────
+  function showEmail(key) {
+    ['exec','team','enduser'].forEach(k => {
+      document.getElementById('email' + k.charAt(0).toUpperCase() + k.slice(1)).style.display = k === key ? '' : 'none';
+      document.getElementById('em-' + k).classList.toggle('active', k === key);
+    });
+  }
+
+  function unlockEmail(key) {
+    const K = key.charAt(0).toUpperCase() + key.slice(1);
+    const subj = document.getElementById('email' + K + 'Subject');
+    const body = document.getElementById('email' + K + 'Body');
+    subj.readOnly = false; subj.style.background = '';
+    body.readOnly = false; body.style.background = '';
+    body.focus();
+  }
+
+  function copyEmail(key) {
+    const K = key.charAt(0).toUpperCase() + key.slice(1);
+    const subj = document.getElementById('email' + K + 'Subject').value;
+    const body = document.getElementById('email' + K + 'Body').value;
+    const full = 'Subject: ' + subj + '\n\n' + body;
+    navigator.clipboard.writeText(full).then(() => {
+      const btn = event.target;
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = orig, 2000);
+    });
+  }
+
+  function generateEmail(type) {
+    const name    = document.getElementById('projName').value || '[Project Name]';
+    const role    = document.getElementById('projRole').value || '[Your Name / Role]';
+    const goLive  = document.getElementById('projGoLive').value || 'TBD';
+    const desc    = document.getElementById('projDesc').value || '[project description]';
+    const systems = document.getElementById('projSystems').value || '[systems]';
+    const brand   = document.getElementById('projBrand').value || '';
+    const projTypeEl = document.getElementById('projType');
+    const projTypeText = projTypeEl.options[projTypeEl.selectedIndex]?.text || 'IT project';
+
+    const decides    = getTableData('decideTable');
+    const contributes= getTableData('contributeTable');
+    const informs    = getTableData('informTable');
+
+    const decideNames = decides.map(r => r[0]).filter(n => n && n !== '—').join(', ') || '[Executive Sponsor, Business Owner]';
+    const teamNames   = contributes.map(r => r[0] + (r[1] && r[1]!=='—' ? ' (' + r[1] + ')' : '')).filter(n => n && n !== '—').join('\n  • ') || '[Team members]';
+    const informGroups= informs.map(r => r[0]).filter(n => n && n !== '—').join(', ') || '[Affected teams]';
+    const brandLine   = brand ? ' for the ' + brand + ' business' : '';
+
+    const today = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+    let subject = '', body = '';
+
+    if (type === 'exec') {
+      subject = `[Kickoff] ${name} — Your Sponsorship &amp; Support Needed`;
+      body =
+`Hi ${decideNames},
+
+I'm writing to officially kick off the ${name} project and to brief you on what we're doing, why it matters, and what we'll need from you.
+
+WHAT WE'RE DOING
+${desc}
+
+Systems involved: ${systems}
+
+WHY IT MATTERS
+This initiative directly supports our ability to [outcome — e.g., improve order accuracy, reduce manual effort, scale operations]${brandLine}. The work spans ${projTypeText.toLowerCase()} and will affect how our teams operate day-to-day.
+
+TARGET GO-LIVE
+${goLive}
+
+WHAT WE NEED FROM YOU
+• Availability for bi-weekly Steering Committee meetings (45 min, calendar invite to follow)
+• Timely decisions when escalated — our goal is to resolve any open decision within 5 business days
+• Visible support for the project with your teams — adoption starts with leadership
+
+I'll keep executive communications brief: a weekly status summary with overall health, top risk, and any decision needed from you.
+
+If you have questions or concerns before our first Steering Committee meeting, please reach out directly.
+
+Thank you for your sponsorship of this work.
+
+${role}`;
+
+    } else if (type === 'team') {
+      subject = `[Kickoff] ${name} — Team Alignment &amp; How We'll Work Together`;
+      body =
+`Team,
+
+We're officially kicking off ${name}. I want to make sure we're all aligned on what we're building, how we'll work together, and what I need from each of you.
+
+PROJECT SUMMARY
+${desc}
+
+Systems: ${systems}
+Target Go-Live: ${goLive}
+
+THE TEAM
+  • ${teamNames}
+
+HOW WE'LL COMMUNICATE
+Weekly Status Meeting — every [day] at [time]. 30 minutes. Structured agenda sent the night before. If your workstream has nothing new, you can pass — but be available.
+
+Technical Working Sessions — weekly during the Build phase. This is where we go deep. Business stakeholders are not in this meeting. Decisions made here get documented and translated into plain language for the status update.
+
+If something is blocked, tell me immediately — don't wait for the weekly meeting. A Slack message or email is fine. Blocks that sit silent become escalations.
+
+WHAT GOOD LOOKS LIKE ON THIS PROJECT
+• Decisions documented in writing, even in technical sessions
+• Risks surfaced early — never as surprises
+• No jargon in business-facing communications
+• UAT is owned by the business — we support, we don't lead it
+• If the scope changes, it comes through me before anything is committed
+
+FIRST STEPS
+• Confirm your availability for the weekly status meeting cadence
+• Review the project scope document [link] and flag any gaps by [date]
+• Surface your top 3 risks or open questions before our first working session
+
+I'm looking forward to working with all of you on this. Let's do it right.
+
+${role}`;
+
+    } else if (type === 'enduser') {
+      subject = `Coming Soon: Changes to [System/Process] — What You Need to Know`;
+      body =
+`Hi team,
+
+I want to give you an early heads-up about an upcoming change that will affect how you work.
+
+WHAT'S HAPPENING
+We're implementing ${name}${brandLine}. In plain terms: ${desc.replace(/\b(API|SOQL|ETL|middleware|Apex|LWC|JSON|SAP OTC)\b/g, '[system]')}
+
+WHAT SYSTEMS ARE INVOLVED
+${systems}
+
+WHEN IS THIS HAPPENING
+Our target go-live is ${goLive}. We'll send you another update as we get closer.
+
+WHAT DOES THIS MEAN FOR YOU
+Right now: nothing changes. You don't need to do anything today.
+
+As we get closer to go-live, we'll share:
+  • Exactly what's changing in your day-to-day workflow
+  • Training sessions before the go-live date
+  • A support contact for questions after launch
+
+WHY WE'RE DOING THIS
+This change is designed to [reduce manual steps / improve data accuracy / give you better visibility — edit to fit]. The goal is to make your work easier, not harder.
+
+QUESTIONS?
+If you have questions or concerns, please reach out to ${role}. We want to hear from you early — your feedback helps us get this right.
+
+We'll be in touch as the project progresses.
+
+${role}`;
+    }
+
+    // Decode HTML entities for textarea display
+    const K = type.charAt(0).toUpperCase() + type.slice(1);
+    const subjEl = document.getElementById('email' + K + 'Subject');
+    const bodyEl = document.getElementById('email' + K + 'Body');
+    subjEl.value = subject.replace(/&amp;/g, '&');
+    bodyEl.value = body.replace(/&amp;/g, '&');
+    subjEl.readOnly = true; subjEl.style.background = 'var(--surface)';
+    bodyEl.readOnly = true; bodyEl.style.background = 'var(--surface)';
+    scheduleAutoSave();
+  }
+
+  // ── EXPORT ───────────────────────────────────────────────────
+  function generateExport() {
+    const name    = document.getElementById('projName').value || '[Project Name]';
+    const type    = document.getElementById('projType').value || '';
+    const role    = document.getElementById('projRole').value || '[Your Role]';
+    const goLive  = document.getElementById('projGoLive').value || 'TBD';
+    const desc    = document.getElementById('projDesc').value || '[Project description]';
+    const systems = document.getElementById('projSystems').value || '[Systems]';
+    const phase   = document.getElementById('projPhase');
+    const phaseText = phase.options[phase.selectedIndex].text;
+    const today = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+
+    const decides    = getTableData('decideTable');
+    const contributes= getTableData('contributeTable');
+    const informs    = getTableData('informTable');
+
+    let out = '';
+    out += `PROJECT COMMUNICATION PLAN\n${'═'.repeat(50)}\n`;
+    out += `Project: ${name}\n`;
+    out += `Type: ${type==='salesforce'?'Salesforce Implementation':type==='integration'?'IT System Integration':type==='hybrid'?'Hybrid':'[Type]'}\n`;
+    out += `IT Lead / Role: ${role}\nGo-Live Target: ${goLive}\nCurrent Phase: ${phaseText}\nSystems: ${systems}\nGenerated: ${today}\n\n`;
+    out += `SUMMARY\n${'─'.repeat(40)}\n${desc}\n\n`;
+    out += `STAKEHOLDER MAP\n${'─'.repeat(40)}\n`;
+    out += `TIER 1 — DECISION MAKERS\n`;
+    decides.forEach(r => out += `  • ${r[0]} | ${r[1]} | Owns: ${r[2]} | Ask: ${r[3]}\n`);
+    out += `\nTIER 2 — ACTIVE CONTRIBUTORS\n`;
+    contributes.forEach(r => out += `  • ${r[0]} | ${r[1]} | ${r[2]} | Engage: ${r[3]}\n`);
+    out += `\nTIER 3 — INFORMED ONLY\n`;
+    informs.forEach(r => out += `  • ${r[0]} | ${r[1]} | ${r[3]}\n`);
+    out += `\nMEETING CADENCE\n${'─'.repeat(40)}\n`;
+    out += `Steering Committee    Bi-weekly · Tier 1 only · Starts: Week 2 of kickoff\n`;
+    out += `Weekly Status         Weekly · 30 min · Tier 1+2 · Written summary to Tier 3\n`;
+    out += `Technical Working     Weekly · Tier 2 technical · Build phase through SIT\n`;
+    out += `UAT Sessions          2x/week during UAT · Business + IT · Test scripts required\n`;
+    out += `Business Readiness    Monthly → Bi-weekly near go-live · People & process focus\n`;
+    out += `Cutover War Room      Daily in go-live week · All leads · 15 min standup\n`;
+    out += `\nDECISION LOG\n${'─'.repeat(40)}\n`;
+    const decisions = getTableData('decisionLogBody');
+    if (decisions.length) {
+      decisions.forEach((r,i) => out += `${i+1}. ${r[0]}\n   Owner: ${r[2]} | Deadline: ${r[4]} | Status: ${r[5]}\n   Outcome: ${r[6]}\n\n`);
+    } else { out += `No decisions logged yet.\n`; }
+    out += `\nCOMMUNICATION RULES\n${'─'.repeat(40)}\n`;
+    out += `• Executive summary: 3 bullets max — status color, top risk, action needed\n`;
+    out += `• Decisions open >5 business days escalate to Steering Committee\n`;
+    out += `• No technical jargon in business-facing communications\n`;
+    out += `• Status report distributed 1 hour before weekly meeting\n`;
+    out += `• UAT owned by business — IT supports, not leads\n`;
+    out += `• Demos over documents for business buy-in\n`;
+
+    document.getElementById('exportPreview').style.display = 'none';
+    const output = document.getElementById('exportOutput');
+    output.textContent = out;
+    output.style.display = 'block';
+    document.getElementById('exportActions').style.display = 'flex';
+    window._exportText = out;
+  }
+
+  function copyExport() {
+    if (window._exportText) {
+      navigator.clipboard.writeText(window._exportText).then(() => {
+        const btn = event.target;
+        btn.textContent = '✅ Copied!';
+        setTimeout(() => btn.textContent = '📋 Copy to Clipboard', 2000);
+      });
+    }
+  }
+
+  // ── INIT ─────────────────────────────────────────────────────
+  filterPhase('all');
+  document.querySelectorAll('[id^="ps-"]').forEach(el => el.classList.remove('active'));
+  document.getElementById('ps-all')?.classList.add('active');
+
+  // Restore auto-save on load
+  try {
+    const saved = localStorage.getItem('pcp_autosave');
+    if (saved) {
+      const data = JSON.parse(saved);
+      restoreAllData(data);
+      const el = document.getElementById('autoSaveStatus');
+      const ts = data.ts ? new Date(data.ts).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+      el.textContent = '✔ Restored ' + ts;
+      setTimeout(() => { el.textContent = '✔ Auto-saved'; }, 3000);
+    }
+  } catch(e) {}
+</script>
+</body>
+</html>

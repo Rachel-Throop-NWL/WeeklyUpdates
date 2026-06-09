@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eBids Pricing — Working Session</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",sans-serif;background:#0D1B2A;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.deck{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 56px;opacity:0;transform:translateX(40px);transition:opacity .4s ease,transform .4s ease;pointer-events:none}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:all}
+.slide.exit{opacity:0;transform:translateX(-40px)}
+/* Title */
+.s-title{background:#0D1B2A;justify-content:center}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#288FC2;margin-bottom:16px}
+.accent{width:44px;height:3px;background:#288FC2;border-radius:2px;margin-bottom:22px}
+.s-title h1{font-size:44px;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.03em;max-width:520px}
+.s-title .sub{font-size:15px;color:rgba(255,255,255,0.4);margin-top:12px;max-width:440px;line-height:1.6}
+.title-footer{border-top:.5px solid rgba(255,255,255,0.07);padding-top:13px;display:flex;justify-content:space-between;margin-top:auto;font-size:11px;color:rgba(255,255,255,0.2)}
+/* Content */
+.s-content{background:#fff}
+.slide-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.step-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.slide-title-text{font-size:24px;font-weight:700;color:#0D1B2A;letter-spacing:-.02em;line-height:1.2}
+.slide-title-sub{font-size:12px;color:#888;margin-top:2px}
+.slide-step-count{font-size:11px;color:#ccc;letter-spacing:.08em;text-transform:uppercase}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0}
+.col-box{border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.col-know{background:#F8FAFC;border:.5px solid #E4E7EB}
+.col-dk{background:#FEF3F2;border:.5px solid #FECACA}
+.col-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.col-know .col-label{color:#288FC2}
+.col-dk .col-label{color:#E24B4A}
+.know-item{display:flex;gap:9px;align-items:flex-start}
+.k-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.k-name{font-size:13px;font-weight:500;color:#111}
+.k-note{font-size:11px;color:#666;margin-top:1px;line-height:1.4}
+.dk-item{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;background:rgba(255,255,255,0.6);border-radius:7px}
+.dk-item p{font-size:13px;color:#7F1D1D;line-height:1.5}
+/* Checklist strip */
+.ck-strip{margin-top:14px;padding-top:12px;border-top:.5px solid #E4E7EB}
+.ck-strip-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:8px}
+.ck-items{display:flex;flex-wrap:wrap;gap:7px}
+.ck-item{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:20px;cursor:pointer;border:.5px solid #E4E7EB;background:#F8F9FA;transition:all .15s;user-select:none}
+.ck-item.done{background:#F0FDF4;border-color:#86EFAC}
+.ck-item.tbd{background:#FEF2F2;border-color:#FECACA}
+.ck-circle{width:16px;height:16px;border-radius:50%;border:1.5px solid #CBD5E1;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ck-item.done .ck-circle{background:#059669;border-color:#059669}
+.ck-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ck-name{font-size:12px;font-weight:500;color:#333;transition:all .15s}
+.ck-item.done .ck-name{color:#888;text-decoration:line-through}
+/* Summary slide */
+.s-summary{background:#0D1B2A}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;overflow-y:auto}
+.sum-col{border-radius:12px;padding:16px 18px}
+.sum-confirmed{background:rgba(5,150,105,0.12);border:.5px solid rgba(5,150,105,0.3)}
+.sum-open{background:rgba(239,68,68,0.1);border:.5px solid rgba(239,68,68,0.3)}
+.sum-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.sum-confirmed .sum-label{color:#4ADE80}
+.sum-open .sum-label{color:#FCA5A5}
+.sum-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid rgba(255,255,255,0.06)}
+.sum-item:last-child{border-bottom:none}
+.sum-item-name{font-size:13px;color:#fff;font-weight:500}
+.sum-item-sec{font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px}
+/* Nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:#0D1B2A;flex-shrink:0}
+.ndots{display:flex;gap:6px}
+.ndot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.18);cursor:pointer;border:none;transition:all .3s}
+.ndot.active{background:#288FC2;transform:scale(1.5)}
+.nav-legend{display:flex;gap:14px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,0.35)}
+.leg-dot{width:6px;height:6px;border-radius:50%}
+.nbtns{display:flex;gap:8px}
+.nbtn{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:500;padding:6px 16px;border-radius:8px;cursor:pointer;border:.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.65);transition:background .2s}
+.nbtn:hover:not(:disabled){background:rgba(255,255,255,0.12)}
+.nbtn:disabled{opacity:.2;cursor:default}
+.nbtn.p{background:#288FC2;border-color:#288FC2;color:#fff}
+.nbtn.p:hover:not(:disabled){background:#1a7aaa}
+.c1{background:#E0F2FE;color:#0C4A6E}.c2{background:#DCFCE7;color:#166534}
+.c3{background:#FEF3E2;color:#92400E}.c4{background:#EDE7F6;color:#4A148C}
+.c5{background:#FEE2E2;color:#991B1B}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- SLIDE 0: Title -->
+<div class="slide s-title active" id="sl0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <div class="eyebrow">Newell Brands · IT OTC Team · Working Session</div>
+    <div class="accent"></div>
+    <h1>eBids pricing requirements</h1>
+    <p class="sub">Aligning on pricing fields, SAP data pulls, and the price increase mechanism before development proceeds.</p>
+  </div>
+  <div class="title-footer">
+    <span>eBids Migration · SFDC-25402 · SFDC-25405 · SFDC-25395</span>
+    <span>June 2026</span>
+  </div>
+</div>
+
+<!-- SLIDE 1: Bid created -->
+<div class="slide s-content" id="sl1">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c1">1</div>
+      <div><p class="slide-title-text">Bid created</p><p class="slide-title-sub">Pricing reference data loaded when a new eBid is created</p></div>
+    </div>
+    <span class="slide-step-count">Step 1 of 5</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#BA7517"></div><div><div class="k-name">List Price</div><div class="k-note">Pulled from SAP · benchmark only · not tied to approved bid price · drives Discount/List %</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Target</div><div class="k-note">Salesforce maintained by Sandra · updated on price increases</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Soft Floor</div><div class="k-note">Salesforce maintained by Sandra · updated on price increases</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Hard Floor</div><div class="k-note">Salesforce maintained by Sandra · updated on price increases</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Public Bid Price</div><div class="k-note">Maintained with floors & guides records in Salesforce</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we don't know</div>
+      <div class="dk-item"><p>How does Salesforce pull List Price from SAP — automated integration or manual upload?</p></div>
+      <div class="dk-item"><p>How often does list price change and what triggers the update in Salesforce?</p></div>
+      <div class="dk-item"><p>Which SAP table / object holds list price?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Confirm these fields during discussion</div>
+    <div class="ck-items" id="ck1"></div>
+  </div>
+</div>
+
+<!-- SLIDE 2: Requestor enters bid -->
+<div class="slide s-content" id="sl2">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c2">2</div>
+      <div><p class="slide-title-text">Requestor enters bid details</p><p class="slide-title-sub">Manual pricing fields + auto-calculated discount</p></div>
+    </div>
+    <span class="slide-step-count">Step 2 of 5</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#888780"></div><div><div class="k-name">Approved Price</div><div class="k-note">Manually keyed by Sandra · updated when price increases occur (SFDC-25405)</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#888780"></div><div><div class="k-name">Competitor · Competitor Price</div><div class="k-note">Optional · manually entered on the bid</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#2E7D32"></div><div><div class="k-name">Discount / List %</div><div class="k-note">(List Price − Approved Price) ÷ List Price · shifts when list price changes</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we don't know</div>
+      <div class="dk-item"><p>Tariff Price — SAP pull, manually entered, or calculated?</p></div>
+      <div class="dk-item"><p>Req Price — entered by Requestor or calculated from another field?</p></div>
+      <div class="dk-item"><p>Req Sales — source completely unknown. What is this field?</p></div>
+      <div class="dk-item"><p>Distributor Price — needed on the eBid record or PoP only?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Confirm these fields during discussion</div>
+    <div class="ck-items" id="ck2"></div>
+  </div>
+</div>
+
+<!-- SLIDE 3: GM% -->
+<div class="slide s-content" id="sl3">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c3">3</div>
+      <div><p class="slide-title-text">GM% calculated → approval routing</p><p class="slide-title-sub">Gross margin % determines who approves the bid</p></div>
+    </div>
+    <span class="slide-step-count">Step 3 of 5</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#2E7D32"></div><div><div class="k-name">GM %</div><div class="k-note">Gross Margin % is calculated and used to determine approval routing tier</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#4A148C"></div><div><div class="k-name">Approval routing</div><div class="k-note">GM% thresholds determine which approver the bid routes to — higher risk to more senior approvers</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we don't know</div>
+      <div class="dk-item"><p>What is the GM% formula? Where does cost come from?</p></div>
+      <div class="dk-item"><p>What are the GM% thresholds that trigger each approval tier?</p></div>
+      <div class="dk-item"><p>Is GM% stored as a field on the eBid or calculated at submission only?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Confirm these fields during discussion</div>
+    <div class="ck-items" id="ck3"></div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Bid approved/denied -->
+<div class="slide s-content" id="sl4">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c4">4</div>
+      <div><p class="slide-title-text">Bid approved or denied</p><p class="slide-title-sub">Notification flow and outcome communications</p></div>
+    </div>
+    <span class="slide-step-count">Step 4 of 5</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Bid routed to approver</div><div class="k-note">Approver notified — bid in their queue · direct link to record required</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Daily reminder</div><div class="k-note">If no action — daily email shows time in queue (days/hours/minutes)</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Final approved</div><div class="k-note">Requestor notified — with or without changes</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#185FA5"></div><div><div class="k-name">Bid denied</div><div class="k-note">Requestor notified · configurable additional recipients on all notifications</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we don't know</div>
+      <div class="dk-item"><p>OOO / delegated approver — what happens if the approver is out of office?</p></div>
+      <div class="dk-item"><p>From address — what email address should notifications come from in Salesforce?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">No pricing fields on this slide — notification design only</div>
+    <div class="ck-items" id="ck4"></div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Price increase -->
+<div class="slide s-content" id="sl5">
+  <div class="slide-top">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="step-circle c5">5</div>
+      <div><p class="slide-title-text">Price increase — recalculation</p><p class="slide-title-sub">Current manual process + automation goal (SFDC-25405)</p></div>
+    </div>
+    <span class="slide-step-count">Step 5 of 5</span>
+  </div>
+  <div class="two-col">
+    <div class="col-box col-know">
+      <div class="col-label">What we know</div>
+      <div class="know-item"><div class="k-dot" style="background:#BA7517"></div><div><div class="k-name">Triggered by SAP list price increase</div><div class="k-note">Changed 3x last year · once so far this year · may be temporary</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#2E7D32"></div><div><div class="k-name">Discount/List % shifts</div><div class="k-note">When list price increases the approved price proportion must be corrected</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#888780"></div><div><div class="k-name">Sandra manually updates today</div><div class="k-note">Updates Approved Price on affected eBid records + Target, Soft Floor, Hard Floor</div></div></div>
+      <div class="know-item"><div class="k-dot" style="background:#E24B4A"></div><div><div class="k-name">Goal — SFDC-25405</div><div class="k-note">Bulk update tool · no IT involvement · Sandra triggers herself</div></div></div>
+    </div>
+    <div class="col-box col-dk">
+      <div class="col-label">What we don't know</div>
+      <div class="dk-item"><p>Who triggers the price increase update — Sandra only or others?</p></div>
+      <div class="dk-item"><p>Does it apply to all approved bids or a specific subset?</p></div>
+      <div class="dk-item"><p>What percentage is applied — same as list price increase or different?</p></div>
+      <div class="dk-item"><p>Does Distributor Price also need updating when list price changes?</p></div>
+    </div>
+  </div>
+  <div class="ck-strip">
+    <div class="ck-strip-label">Confirm these fields during discussion</div>
+    <div class="ck-items" id="ck5"></div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Summary -->
+<div class="slide s-summary" id="sl6">
+  <div style="margin-bottom:20px">
+    <p style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#288FC2;margin-bottom:8px">Call summary</p>
+    <h2 style="font-size:26px;font-weight:700;color:#fff;letter-spacing:-.02em">What we confirmed · what's still open</h2>
+  </div>
+  <div class="sum-grid" id="sum-grid">
+    <div class="sum-col sum-confirmed">
+      <div class="sum-label">✔ Confirmed</div>
+      <div id="sum-confirmed-list"><p style="font-size:13px;color:rgba(255,255,255,0.4)">Check off fields on each slide to populate this list</p></div>
+    </div>
+    <div class="sum-col sum-open">
+      <div class="sum-label">○ Still open</div>
+      <div id="sum-open-list"><p style="font-size:13px;color:rgba(255,255,255,0.4)">Unconfirmed fields will appear here</p></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .deck -->
+
+<div class="nav">
+  <div class="nav-legend">
+    <div class="leg"><div class="leg-dot" style="background:#BA7517"></div>SAP</div>
+    <div class="leg"><div class="leg-dot" style="background:#185FA5"></div>Salesforce</div>
+    <div class="leg"><div class="leg-dot" style="background:#888780"></div>Manual</div>
+    <div class="leg"><div class="leg-dot" style="background:#2E7D32"></div>Calculated</div>
+    <div class="leg"><div class="leg-dot" style="background:#E24B4A"></div>TBD</div>
+  </div>
+  <div class="ndots" id="ndots"></div>
+  <div class="nbtns">
+    <button class="nbtn" id="bp" onclick="go(-1)" disabled>← Back</button>
+    <button class="nbtn p" id="bn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+// ── FIELD DATA per slide ──────────────────────────────────
+var ckFields = {
+  1: [
+    {id:'list-price',  name:'List Price',     dot:'#BA7517', tbd:false},
+    {id:'target',      name:'Target',         dot:'#185FA5', tbd:false},
+    {id:'soft-floor',  name:'Soft Floor',     dot:'#185FA5', tbd:false},
+    {id:'hard-floor',  name:'Hard Floor',     dot:'#185FA5', tbd:false},
+    {id:'public-bid',  name:'Public Bid Price',dot:'#185FA5',tbd:false},
+  ],
+  2: [
+    {id:'approved-price',   name:'Approved Price',      dot:'#888780', tbd:false},
+    {id:'competitor',       name:'Competitor Price',     dot:'#888780', tbd:false},
+    {id:'disc-list',        name:'Discount / List %',   dot:'#2E7D32', tbd:false},
+    {id:'tariff',           name:'Tariff Price',         dot:'#E24B4A', tbd:true},
+    {id:'req-price',        name:'Req Price',            dot:'#E24B4A', tbd:true},
+    {id:'req-sales',        name:'Req Sales',            dot:'#E24B4A', tbd:true},
+    {id:'distr-price',      name:'Distributor Price',   dot:'#E24B4A', tbd:true},
+  ],
+  3: [
+    {id:'gm-pct',  name:'GM %',            dot:'#2E7D32', tbd:true},
+    {id:'routing', name:'Approval routing', dot:'#4A148C', tbd:true},
+  ],
+  4: [],
+  5: [
+    {id:'price-inc-trigger', name:'Price increase trigger',  dot:'#BA7517', tbd:false},
+    {id:'bulk-update',       name:'Bulk update mechanism',   dot:'#E24B4A', tbd:true},
+    {id:'pct-calc',          name:'% calculation method',   dot:'#E24B4A', tbd:true},
+    {id:'distr-update',      name:'Distributor Price update',dot:'#E24B4A', tbd:true},
+  ]
+};
+
+var confirmed = {};
+
+function renderCk(slide){
+  var container = document.getElementById('ck'+slide);
+  if(!container) return;
+  var fields = ckFields[slide] || [];
+  if(!fields.length){return;}
+  container.innerHTML = '';
+  fields.forEach(function(f){
+    var el = document.createElement('div');
+    var isDone = confirmed[f.id];
+    el.className = 'ck-item' + (isDone?' done':'') + (f.tbd&&!isDone?' tbd':'');
+    el.onclick = function(){ confirmed[f.id]=!confirmed[f.id]; renderAllCk(); updateSummary(); };
+    el.innerHTML =
+      '<div class="ck-circle">'+(isDone?'<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4l3 3L9 1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div>'+
+      '<div class="ck-dot" style="background:'+f.dot+'"></div>'+
+      '<span class="ck-name">'+f.name+'</span>';
+    container.appendChild(el);
+  });
+}
+
+function renderAllCk(){
+  [1,2,3,4,5].forEach(renderCk);
+}
+
+function updateSummary(){
+  var allFields = [];
+  [1,2,3,4,5].forEach(function(s){(ckFields[s]||[]).forEach(function(f){allFields.push(f);});});
+  var conf = allFields.filter(function(f){return confirmed[f.id];});
+  var open = allFields.filter(function(f){return !confirmed[f.id];});
+
+  var cl = document.getElementById('sum-confirmed-list');
+  var ol = document.getElementById('sum-open-list');
+
+  if(conf.length){
+    cl.innerHTML = conf.map(function(f){return '<div class="sum-item"><div style="width:7px;height:7px;border-radius:50%;background:'+f.dot+';flex-shrink:0"></div><div><div class="sum-item-name">'+f.name+'</div></div></div>';}).join('');
+  } else {
+    cl.innerHTML = '<p style="font-size:13px;color:rgba(255,255,255,0.3)">No fields confirmed yet</p>';
+  }
+  if(open.length){
+    ol.innerHTML = open.map(function(f){return '<div class="sum-item"><div style="width:7px;height:7px;border-radius:50%;background:'+f.dot+';flex-shrink:0"></div><div><div class="sum-item-name">'+f.name+'</div></div></div>';}).join('');
+  } else {
+    ol.innerHTML = '<p style="font-size:13px;color:rgba(255,255,255,0.3)">All fields confirmed!</p>';
+  }
+}
+
+// ── NAV ──────────────────────────────────────────────────
+var N = 7; var cur = 0;
+var ids = ['sl0','sl1','sl2','sl3','sl4','sl5','sl6'];
+
+var dc = document.getElementById('ndots');
+for(var i=0;i<N;i++){
+  var d=document.createElement('button');
+  d.className='ndot'+(i===0?' active':'');
+  d.id='nd'+i;
+  d.setAttribute('aria-label','Slide '+(i+1));
+  (function(n){d.onclick=function(){goTo(n);};})(i);
+  dc.appendChild(d);
+}
+
+function goTo(n){
+  var prev=document.getElementById(ids[cur]);
+  if(prev){prev.classList.remove('active');prev.classList.add('exit');setTimeout(function(){prev.classList.remove('exit');},400);}
+  cur=n;
+  var next=document.getElementById(ids[cur]);
+  if(next)next.classList.add('active');
+  document.getElementById('bp').disabled=cur===0;
+  var bn=document.getElementById('bn');
+  bn.disabled=cur===N-1;
+  bn.textContent=cur===N-1?'Done ✓':'Next →';
+  for(var i=0;i<N;i++)document.getElementById('nd'+i).classList.toggle('active',i===cur);
+  if(cur===6)updateSummary();
+}
+
+function go(d){var n=Math.max(0,Math.min(N-1,cur+d));if(n!==cur)goTo(n);}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);});
+
+// Init
+renderAllCk();
+updateSummary();
+</script>
+</body>
+</html>

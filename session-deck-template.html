@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Touchbase — June 24, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0D1B2A;
+    --navy-light: #152334;
+    --navy-mid: #1E3148;
+    --navy-border: #2A4060;
+    --blue-text: #7EC8F0;
+    --blue-bg: rgba(30, 111, 191, 0.15);
+    --red-text: #F08080;
+    --red-bg: rgba(192, 57, 43, 0.15);
+    --gold: #E8A838;
+    --white: #F0F4F8;
+    --muted: #7A99B8;
+    --confirmed: #27AE60;
+    --confirmed-bg: rgba(39, 174, 96, 0.15);
+    --open-bg: rgba(230, 126, 34, 0.15);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'Inter', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow: hidden;
+  }
+
+  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column;
+    background: var(--navy);
+  }
+  .slide.active { display: flex; }
+
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 52px; background: #08111C;
+    border-top: 1px solid var(--navy-border);
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; z-index: 100;
+  }
+
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--navy-border); cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .nav-dot.active { background: var(--gold); transform: scale(1.3); }
+  .nav-dot:hover:not(.active) { background: var(--muted); }
+
+  .nav-arrow {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px;
+    background: rgba(8,17,28,0.7); border: 1px solid var(--navy-border);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--muted); font-size: 18px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    z-index: 100; user-select: none;
+  }
+  .nav-arrow:hover { color: var(--white); border-color: var(--gold); background: rgba(8,17,28,0.95); }
+  .nav-arrow.left { left: 16px; }
+  .nav-arrow.right { right: 16px; }
+
+  .slide-label {
+    position: absolute; top: 18px; right: 24px;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  }
+
+  /* TITLE SLIDE */
+  #slide-0 {
+    justify-content: center; align-items: flex-start;
+    padding: 60px 80px 80px;
+  }
+
+  .title-eyebrow {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 20px;
+  }
+
+  .meeting-type-badge {
+    display: inline-block;
+    background: var(--navy-mid);
+    border: 1px solid var(--navy-border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+  }
+
+  .title-main {
+    font-size: 52px; font-weight: 700;
+    line-height: 1.1; color: var(--white); margin-bottom: 12px;
+  }
+
+  .title-sub {
+    font-size: 20px; font-weight: 300;
+    color: var(--muted); margin-bottom: 48px;
+  }
+
+  .title-divider {
+    width: 60px; height: 3px;
+    background: var(--gold); margin-bottom: 48px; border-radius: 2px;
+  }
+
+  .meta-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 32px; max-width: 640px;
+  }
+
+  .meta-block label {
+    display: block; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .meta-block .value {
+    font-size: 15px; font-weight: 500;
+    color: var(--white); line-height: 1.5;
+  }
+
+  .jira-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--blue-bg); border: 1px solid rgba(30,111,191,0.3);
+    border-radius: 4px; padding: 4px 10px;
+    font-size: 12px; font-weight: 500; color: var(--blue-text);
+    margin-top: 4px; cursor: pointer; text-decoration: none;
+    transition: background 0.15s;
+  }
+  .jira-pill:hover { background: rgba(30,111,191,0.25); }
+  .jira-pill svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  .title-watermark {
+    position: absolute; bottom: 72px; right: 64px;
+    font-size: 11px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(122,153,184,0.3);
+  }
+
+  /* SHARED SLIDE STRUCTURE */
+  .slide-header {
+    padding: 40px 80px 32px;
+    border-bottom: 1px solid var(--navy-border); flex-shrink: 0;
+  }
+  .slide-header .eyebrow {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 10px;
+  }
+  .slide-header h2 { font-size: 34px; font-weight: 700; color: var(--white); }
+
+  /* OVERVIEW SLIDE */
+  .overview-body {
+    flex: 1; display: flex; gap: 0;
+    padding: 0 80px; overflow: hidden;
+  }
+
+  .overview-goal {
+    flex: 1; padding: 36px 40px 0 0;
+    border-right: 1px solid var(--navy-border);
+  }
+  .overview-goal label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); display: block; margin-bottom: 12px;
+  }
+  .overview-goal p {
+    font-size: 16px; font-weight: 400;
+    color: var(--white); line-height: 1.7;
+  }
+
+  .overview-topics { flex: 1.4; padding: 36px 0 0 40px; }
+  .overview-topics label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); display: block; margin-bottom: 20px;
+  }
+
+  .topic-card {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 20px 22px; background: var(--navy-light);
+    border: 1px solid var(--navy-border); border-radius: 8px;
+    margin-bottom: 12px; cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .topic-card:hover { border-color: var(--gold); background: var(--navy-mid); }
+
+  .topic-num {
+    font-size: 24px; font-weight: 700; color: var(--gold);
+    line-height: 1; flex-shrink: 0; width: 32px;
+  }
+  .topic-info h3 { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .topic-info p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* CONTENT SLIDES */
+  .content-slide { display: flex; flex-direction: column; }
+
+  .content-body {
+    flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+    padding: 0 80px; overflow: hidden; min-height: 0;
+  }
+
+  .col-know { padding: 28px 32px 20px 0; border-right: 1px solid var(--navy-border); }
+  .col-confirm { padding: 28px 0 20px 32px; }
+
+  .col-label {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+  }
+  .col-label .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .col-label .dot.blue { background: var(--blue-text); }
+  .col-label .dot.red { background: var(--red-text); }
+  .col-label span {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  }
+
+  .col-card {
+    border-radius: 8px; padding: 20px 22px;
+    height: calc(100% - 42px); overflow-y: auto;
+  }
+  .col-card.blue { background: var(--blue-bg); border: 1px solid rgba(30,111,191,0.25); }
+  .col-card.red { background: var(--red-bg); border: 1px solid rgba(192,57,43,0.25); }
+
+  .col-card ul { list-style: none; padding: 0; }
+  .col-card ul li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px; line-height: 1.6; color: var(--white);
+  }
+  .col-card ul li:last-child { border-bottom: none; }
+  .col-card ul li::before {
+    content: ''; width: 5px; height: 5px;
+    border-radius: 50%; margin-top: 8px; flex-shrink: 0;
+  }
+  .col-card.blue ul li::before { background: var(--blue-text); }
+  .col-card.red ul li::before { background: var(--red-text); }
+
+  /* CHECKLIST STRIP */
+  .checklist-strip {
+    flex-shrink: 0; background: #08111C;
+    border-top: 1px solid var(--navy-border);
+    padding: 14px 80px 66px;
+  }
+  .checklist-strip label {
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); display: block; margin-bottom: 10px;
+  }
+  .checklist-items { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .check-item {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--navy-light); border: 1px solid var(--navy-border);
+    border-radius: 6px; padding: 7px 12px; cursor: pointer;
+    transition: all 0.2s; user-select: none;
+    font-size: 12.5px; font-weight: 400; color: var(--white);
+  }
+  .check-item:hover { border-color: var(--gold); background: var(--navy-mid); }
+  .check-item.confirmed {
+    background: var(--confirmed-bg); border-color: rgba(39,174,96,0.4); color: #6EE8A0;
+  }
+  .check-item .check-box {
+    width: 16px; height: 16px; border-radius: 4px;
+    border: 1.5px solid var(--navy-border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s; font-size: 10px;
+  }
+  .check-item.confirmed .check-box {
+    background: var(--confirmed); border-color: var(--confirmed); color: #fff;
+  }
+
+  /* SUMMARY SLIDE */
+  .summary-body {
+    flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+    padding: 0 80px; overflow: hidden; min-height: 0;
+  }
+  .summary-col { padding: 28px 32px 20px 0; overflow-y: auto; }
+  .summary-col:last-child { padding: 28px 0 20px 32px; border-left: 1px solid var(--navy-border); }
+
+  .summary-col-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--navy-border);
+  }
+  .summary-col-header .badge {
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+  }
+  .badge.confirmed-badge { background: var(--confirmed-bg); color: #6EE8A0; border: 1px solid rgba(39,174,96,0.3); }
+  .badge.open-badge { background: var(--open-bg); color: #F0A060; border: 1px solid rgba(230,126,34,0.3); }
+  .summary-col-header h3 { font-size: 15px; font-weight: 600; color: var(--white); }
+
+  .summary-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px; border-radius: 6px; margin-bottom: 8px;
+    font-size: 13px; color: var(--white); line-height: 1.5;
+  }
+  .summary-item.is-confirmed { background: var(--confirmed-bg); border: 1px solid rgba(39,174,96,0.2); }
+  .summary-item.is-open { background: var(--open-bg); border: 1px solid rgba(230,126,34,0.2); }
+  .summary-item .icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+
+  .summary-topic-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin: 16px 0 8px;
+  }
+  .summary-topic-label:first-child { margin-top: 0; }
+
+  .empty-state { font-size: 13px; color: var(--muted); font-style: italic; padding: 12px 0; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius: 2px; }
+
+  .progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--gold); transition: width 0.3s ease; z-index: 101;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 0: TITLE -->
+  <div class="slide active" id="slide-0">
+    <span class="slide-label">01 / 04</span>
+    <p class="title-eyebrow">Newell Brands · IT Order to Cash</p>
+    <div class="meeting-type-badge">Weekly Touchbase</div>
+    <h1 class="title-main">Weekly<br>Touchbase</h1>
+    <p class="title-sub">eBids &amp; PoP Open Items Review</p>
+    <div class="title-divider"></div>
+    <div class="meta-grid">
+      <div class="meta-block">
+        <label>Call Date</label>
+        <div class="value">June 24, 2026</div>
+      </div>
+      <div class="meta-block">
+        <label>Facilitator</label>
+        <div class="value">Rachel Throop</div>
+      </div>
+      <div class="meta-block">
+        <label>Attendees</label>
+        <div class="value">Venkat Kuttua<br>Mike Conti</div>
+      </div>
+      <div class="meta-block">
+        <label>Jira References</label>
+        <div class="value">
+          <a class="jira-pill" href="#" onclick="return false;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.75 2C9.13 2 7 4.13 7 6.75v.5H4.75A2.75 2.75 0 002 10v8.25A3.75 3.75 0 005.75 22h8.5A3.75 3.75 0 0018 18.25V17h2.25A2.75 2.75 0 0023 14.25V6.75C23 4.13 20.87 2 18.25 2h-6.5zM8.5 7.25V6.75a3.25 3.25 0 116.5 0v.5h-6.5zm8 11a2.25 2.25 0 01-2.25 2.25h-8.5A2.25 2.25 0 013.5 18.25V10c0-.69.56-1.25 1.25-1.25h13c.69 0 1.25.56 1.25 1.25v8.25z"/></svg>
+            eBids Project
+          </a>
+          <a class="jira-pill" href="#" onclick="return false;" style="margin-left:6px;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.75 2C9.13 2 7 4.13 7 6.75v.5H4.75A2.75 2.75 0 002 10v8.25A3.75 3.75 0 005.75 22h8.5A3.75 3.75 0 0018 18.25V17h2.25A2.75 2.75 0 0023 14.25V6.75C23 4.13 20.87 2 18.25 2h-6.5zM8.5 7.25V6.75a3.25 3.25 0 116.5 0v.5h-6.5zm8 11a2.25 2.25 0 01-2.25 2.25h-8.5A2.25 2.25 0 013.5 18.25V10c0-.69.56-1.25 1.25-1.25h13c.69 0 1.25.56 1.25 1.25v8.25z"/></svg>
+            PoP Project
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="title-watermark">Weekly Touchbase · June 24, 2026</div>
+  </div>
+
+  <!-- SLIDE 1: OVERVIEW -->
+  <div class="slide" id="slide-1">
+    <span class="slide-label">02 / 04</span>
+    <div class="slide-header">
+      <div class="eyebrow">Agenda Overview</div>
+      <h2>What We're Covering Today</h2>
+    </div>
+    <div class="overview-body">
+      <div class="overview-goal">
+        <label>Session Context</label>
+        <p>Align on open items for <strong style="color:var(--white);font-weight:600;">eBids</strong> and <strong style="color:var(--white);font-weight:600;">PoP</strong>, confirm level of effort estimates, and identify next steps to unblock both workstreams.</p>
+      </div>
+      <div class="overview-topics">
+        <label>Topics</label>
+        <div class="topic-card" onclick="goToSlide(2)">
+          <div class="topic-num">01</div>
+          <div class="topic-info">
+            <h3>eBids Build</h3>
+            <p>Initial build is complete — align on next steps and LOE</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: TOPIC 1 -->
+  <div class="slide content-slide" id="slide-2">
+    <span class="slide-label">03 / 04</span>
+    <div class="slide-header">
+      <div class="eyebrow">Topic 01 · eBids</div>
+      <h2>eBids Build</h2>
+    </div>
+    <div class="content-body">
+      <div class="col-know">
+        <div class="col-label"><span class="dot blue"></span><span>What We Know</span></div>
+        <div class="col-card blue">
+          <ul>
+            <li>Initial build for eBids is in place and available for review</li>
+            <li>The foundational structure has been established, providing a baseline to work from</li>
+            <li>Team has visibility into the current state of the build</li>
+            <li>Next steps need to be clearly defined before work can proceed</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-confirm">
+        <div class="col-label"><span class="dot red"></span><span>What We Need to Confirm</span></div>
+        <div class="col-card red">
+          <ul>
+            <li>Level of Effort (LOE) — how much work remains to complete the eBids build?</li>
+            <li>Prioritized next steps and sequencing of remaining work items</li>
+            <li>Resource availability and ownership of outstanding tasks</li>
+            <li>Target completion timeline based on confirmed LOE</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="checklist-strip">
+      <label>Confirm items during call — click to mark resolved</label>
+      <div class="checklist-items" id="checklist-2">
+        <div class="check-item" data-slide="2" data-idx="0" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div><span>LOE confirmed</span>
+        </div>
+        <div class="check-item" data-slide="2" data-idx="1" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div><span>Next steps defined</span>
+        </div>
+        <div class="check-item" data-slide="2" data-idx="2" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div><span>Ownership assigned</span>
+        </div>
+        <div class="check-item" data-slide="2" data-idx="3" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div><span>Timeline agreed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: SUMMARY -->
+  <div class="slide" id="slide-summary">
+    <span class="slide-label">04 / 04</span>
+    <div class="slide-header">
+      <div class="eyebrow">Session Summary</div>
+      <h2>Confirmed vs. Still Open</h2>
+    </div>
+    <div class="summary-body">
+      <div class="summary-col">
+        <div class="summary-col-header">
+          <h3>Confirmed</h3>
+          <span class="badge confirmed-badge" id="confirmed-count">0 items</span>
+        </div>
+        <div id="confirmed-list">
+          <div class="empty-state">No items confirmed yet — use the checklists on each topic slide.</div>
+        </div>
+      </div>
+      <div class="summary-col">
+        <div class="summary-col-header">
+          <h3>Still Open</h3>
+          <span class="badge open-badge" id="open-count">0 items</span>
+        </div>
+        <div id="open-list">
+          <div class="empty-state">Navigate through topics to see open items here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav-arrow left" onclick="prevSlide()">&#8592;</div>
+<div class="nav-arrow right" onclick="nextSlide()">&#8594;</div>
+<div class="nav-bar" id="navBar"></div>
+
+<script>
+  const SLIDES = ['slide-0','slide-1','slide-2','slide-summary'];
+  let current = 0;
+
+  const topicMeta = {
+    2: { topic: 'eBids Build', items: ['LOE confirmed','Next steps defined','Ownership assigned','Timeline agreed'] }
+  };
+
+  const checks = {};
+  Object.keys(topicMeta).forEach(k => { checks[k] = topicMeta[k].items.map(() => false); });
+
+  function buildNav() {
+    const bar = document.getElementById('navBar');
+    bar.innerHTML = '';
+    SLIDES.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'nav-dot' + (i === current ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      bar.appendChild(dot);
+    });
+  }
+
+  function updateProgress() {
+    document.getElementById('progressBar').style.width = (current / (SLIDES.length - 1) * 100) + '%';
+  }
+
+  function goToSlide(n) {
+    document.getElementById(SLIDES[current]).classList.remove('active');
+    current = Math.max(0, Math.min(SLIDES.length - 1, n));
+    document.getElementById(SLIDES[current]).classList.add('active');
+    buildNav();
+    updateProgress();
+    if (SLIDES[current] === 'slide-summary') buildSummary();
+  }
+
+  function nextSlide() { goToSlide(current + 1); }
+  function prevSlide() { goToSlide(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prevSlide();
+  });
+
+  function toggleCheck(el) {
+    const slideKey = el.dataset.slide;
+    const idx = parseInt(el.dataset.idx);
+    checks[slideKey][idx] = !checks[slideKey][idx];
+    el.classList.toggle('confirmed', checks[slideKey][idx]);
+  }
+
+  function buildSummary() {
+    let confirmedHTML = '', openHTML = '', cCount = 0, oCount = 0;
+    Object.keys(topicMeta).forEach(slideKey => {
+      const meta = topicMeta[slideKey];
+      let hasC = false, hasO = false;
+      meta.items.forEach((item, idx) => {
+        if (checks[slideKey][idx]) {
+          if (!hasC) confirmedHTML += `<div class="summary-topic-label">${meta.topic}</div>`;
+          hasC = true;
+          confirmedHTML += `<div class="summary-item is-confirmed"><span class="icon">✓</span><span>${item}</span></div>`;
+          cCount++;
+        } else {
+          if (!hasO) openHTML += `<div class="summary-topic-label">${meta.topic}</div>`;
+          hasO = true;
+          openHTML += `<div class="summary-item is-open"><span class="icon">○</span><span>${item}</span></div>`;
+          oCount++;
+        }
+      });
+    });
+    document.getElementById('confirmed-list').innerHTML = confirmedHTML || '<div class="empty-state">No items confirmed yet.</div>';
+    document.getElementById('open-list').innerHTML = openHTML || '<div class="empty-state">All items confirmed — great session!</div>';
+    document.getElementById('confirmed-count').textContent = cCount + (cCount === 1 ? ' item' : ' items');
+    document.getElementById('open-count').textContent = oCount + (oCount === 1 ? ' item' : ' items');
+  }
+
+  buildNav();
+  updateProgress();
+</script>
+</body>
+</html>

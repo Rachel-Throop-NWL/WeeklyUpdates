@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Working Session Deck Builder — IT Toolbox</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#F0F2F5;color:#111;min-height:100vh;display:flex;flex-direction:column}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#01405C,#288FC2);padding:36px 40px 32px}
+.hero-back{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:14px;display:inline-flex;align-items:center;gap:5px;text-decoration:none}
+.hero-back:hover{color:#fff}
+.hero h1{font-size:26px;font-weight:700;color:#fff;letter-spacing:-.02em;margin-bottom:5px}
+.hero p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.6}
+
+/* MAIN */
+.main{flex:1;padding:32px 40px;max-width:780px;margin:0 auto;width:100%}
+
+/* PROMPT BOX */
+.prompt-card{background:#fff;border:1px solid #E4E7EB;border-radius:14px;padding:24px;margin-bottom:20px}
+.prompt-label{font-size:13px;font-weight:600;color:#111;margin-bottom:6px}
+.prompt-sub{font-size:12px;color:#888;margin-bottom:14px;line-height:1.5}
+.prompt-examples{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.example-chip{font-size:12px;padding:5px 12px;border-radius:20px;background:#F0F2F5;color:#555;cursor:pointer;border:.5px solid #E4E7EB;transition:all .15s}
+.example-chip:hover{background:#E0F2FE;border-color:#C8E3F0;color:#0C4A6E}
+.prompt-input{width:100%;padding:12px 14px;border:1.5px solid #E4E7EB;border-radius:10px;font-family:inherit;font-size:14px;color:#111;resize:none;min-height:80px;outline:none;line-height:1.6;transition:border-color .15s}
+.prompt-input:focus{border-color:#288FC2}
+.build-btn{display:flex;align-items:center;gap:8px;margin-top:12px;padding:11px 22px;background:#01405C;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.build-btn:hover{background:#012d41}
+.build-btn:disabled{opacity:.5;cursor:default}
+.build-btn .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.build-btn.loading .spinner{display:block}
+.build-btn.loading .btn-text{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* STATUS */
+.status-box{background:#E0F2FE;border:.5px solid #C8E3F0;border-radius:10px;padding:12px 16px;font-size:13px;color:#0C4A6E;margin-bottom:16px;display:none;align-items:center;gap:10px}
+.status-box.show{display:flex}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#288FC2;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ERROR */
+.error-box{background:#FEF2F2;border:.5px solid #FECACA;border-radius:10px;padding:12px 16px;font-size:13px;color:#991B1B;margin-bottom:16px;display:none}
+.error-box.show{display:block}
+
+/* PREVIEW */
+.preview-card{background:#fff;border:1px solid #E4E7EB;border-radius:14px;overflow:hidden;display:none}
+.preview-card.show{display:block}
+.preview-header{background:#0D1B2A;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.preview-title{font-size:13px;font-weight:600;color:#fff}
+.preview-subtitle{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px}
+.preview-actions{display:flex;gap:8px}
+.action-btn{font-family:inherit;font-size:12px;font-weight:600;padding:7px 14px;border-radius:7px;cursor:pointer;border:none;transition:all .15s}
+.btn-download{background:#288FC2;color:#fff}
+.btn-download:hover{background:#1a7aaa}
+.btn-preview{background:rgba(255,255,255,0.1);color:#fff;border:.5px solid rgba(255,255,255,0.2)}
+.btn-preview:hover{background:rgba(255,255,255,0.18)}
+.preview-body{padding:20px}
+.slide-preview{display:flex;flex-direction:column;gap:10px}
+.sp-slide{background:#F8F9FA;border:1px solid #E4E7EB;border-radius:9px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.sp-num{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.sp-title{font-size:13px;font-weight:600;color:#111;margin-bottom:2px}
+.sp-desc{font-size:11px;color:#888;line-height:1.4}
+.sp-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.sp-tag{font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500}
+.c1{background:#E0F2FE;color:#0C4A6E}
+.c2{background:#DCFCE7;color:#166534}
+.c3{background:#FEF3E2;color:#92400E}
+.c4{background:#EDE7F6;color:#4A148C}
+.c5{background:#FEE2E2;color:#991B1B}
+.cs{background:#F1F5F9;color:#475569}
+
+.footer{text-align:center;padding:24px 40px;font-size:12px;color:#aaa;border-top:1px solid #E4E7EB}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <a href="index.html" class="hero-back">← IT Toolbox</a>
+  <h1>✨ Working Session Deck Builder</h1>
+  <p>Describe your meeting in plain English. Claude builds the interactive deck for you.</p>
+</div>
+
+<div class="main">
+
+  <div class="prompt-card">
+    <div style="margin-bottom:16px;padding:12px 14px;background:#FEF3F2;border:.5px solid #FECACA;border-radius:8px;font-size:12px;color:#7F1D1D;line-height:1.6">
+      <strong>API key required</strong> — Enter your Anthropic API key below. It stays in your browser only and is never stored or shared.
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <input type="password" id="api-key" placeholder="sk-ant-..." style="flex:1;padding:7px 10px;border:1px solid #FECACA;border-radius:7px;font-family:inherit;font-size:12px;outline:none;background:#fff">
+        <button onclick="toggleKey()" style="font-size:11px;padding:7px 10px;border:1px solid #E4E7EB;border-radius:7px;background:#fff;cursor:pointer;font-family:inherit;color:#555">Show</button>
+      </div>
+    </div>
+    <div class="prompt-label">What's your meeting about?</div>
+    <div class="prompt-sub">Describe the meeting, who's attending, what you need to align on, and any key details. The more context you give, the better the deck.</div>
+
+    <div class="prompt-examples">
+      <div class="example-chip" onclick="setExample(0)">PoP SAP integration call with Rodel and Courtlan</div>
+      <div class="example-chip" onclick="setExample(1)">eBids pricing working session with Sandra and Venkat</div>
+      <div class="example-chip" onclick="setExample(2)">MAPA EMEA WITL testing kickoff with Cedric and Nancy</div>
+      <div class="example-chip" onclick="setExample(3)">Salesforce approval process design review</div>
+    </div>
+
+    <textarea class="prompt-input" id="prompt" placeholder="e.g. PoP SAP integration call with Rodel and Courtlan to align on the three integration requirements — billing data pull, ZCMIR records, and credit memo creation. Need to confirm real-time vs batch approach and who owns each piece."></textarea>
+
+    <button class="build-btn" id="build-btn" onclick="buildDeck()">
+      <div class="spinner"></div>
+      <span class="btn-text">✨ Build my deck</span>
+    </button>
+  </div>
+
+  <div class="status-box" id="status-box">
+    <div class="status-dot"></div>
+    <span id="status-text">Claude is building your deck...</span>
+  </div>
+
+  <div class="error-box" id="error-box"></div>
+
+  <div class="preview-card" id="preview-card">
+    <div class="preview-header">
+      <div>
+        <div class="preview-title" id="preview-title">Your deck is ready</div>
+        <div class="preview-subtitle" id="preview-subtitle"></div>
+      </div>
+      <div class="preview-actions">
+        <button class="action-btn btn-preview" onclick="openPreview()">👁 Preview</button>
+        <button class="action-btn btn-download" onclick="downloadDeck()">⬇ Download</button>
+      </div>
+    </div>
+    <div class="preview-body">
+      <div class="slide-preview" id="slide-preview"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <a href="index.html" style="color:#288FC2;text-decoration:none">← IT Toolbox</a> &nbsp;·&nbsp;
+  Built by Rachel Throop · Newell Brands IT · Powered by Claude
+</div>
+
+<script>
+var examples = [
+  'PoP SAP integration call with Rodel and Courtlan to align on the three integration requirements — billing data pull from VBRK/VBRP, ZCMIR Customer Material # records, and credit memo creation (SD document type CR). Need to confirm real-time vs batch approach, integration method, and who owns each piece.',
+  'eBids pricing working session with Sandra, Venkat, Prasad, and Larisa. Need to align on all pricing fields including SAP list price pull, GM% formula and routing logic, price increase mechanism, and several unknowns like Tariff Price source and Req Sales source.',
+  'MAPA EMEA WITL testing kickoff with Cedric and Nancy. Sprint release on June 15 — changes move to SFC on June 16. Cedric owns MAPA EMEA WITL testing, Karen Chavis owns NA regression testing. Need to confirm RC1 connection and testing scope.',
+  'Salesforce approval process design review with Venkat and Vineet. Reviewing the eBids approval notification matrix — bid routed, daily reminder, final approved, and denied. Need to confirm email templates, direct bid link requirement, and configurable recipients.'
+];
+
+function setExample(i){ document.getElementById('prompt').value = examples[i]; }
+
+var generatedHTML = '';
+
+function toggleKey(){
+  var inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function buildDeck(){
+  var prompt = document.getElementById('prompt').value.trim();
+  var apiKey = document.getElementById('api-key').value.trim();
+  if(!apiKey){ alert('Please enter your Anthropic API key first.'); return; }
+  if(!prompt){ alert('Please describe your meeting first.'); return; }
+
+  var btn = document.getElementById('build-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+
+  document.getElementById('status-box').classList.add('show');
+  document.getElementById('error-box').classList.remove('show');
+  document.getElementById('preview-card').classList.remove('show');
+
+  var statuses = [
+    'Analysing your meeting description...',
+    'Identifying key topics and open questions...',
+    'Building slide structure...',
+    'Writing what we know and what we need to confirm...',
+    'Adding checklists and summary slide...',
+    'Finalising your deck...'
+  ];
+  var si = 0;
+  var stEl = document.getElementById('status-text');
+  var stTimer = setInterval(function(){
+    si = (si+1) % statuses.length;
+    stEl.textContent = statuses[si];
+  }, 2200);
+
+  try {
+    var systemPrompt = `You are an expert IT project manager at Newell Brands. You build interactive HTML working session decks for IT meetings. 
+
+Given a meeting description, generate a complete JSON structure for an interactive slide deck with this exact format:
+
+{
+  "title": "Short deck title",
+  "subtitle": "One sentence description of what this session will achieve",
+  "attendees": "Comma separated list of attendees",
+  "jiras": "Any Jira ticket numbers mentioned",
+  "date": "June 2026",
+  "slides": [
+    {
+      "type": "overview",
+      "title": "What we're aligning on today",
+      "items": [
+        {"num": "1", "title": "Topic name", "desc": "Brief description", "type": "pull|push|discuss|confirm|review"}
+      ],
+      "goal": "One sentence goal of this call"
+    },
+    {
+      "type": "content",
+      "num": "1",
+      "color": "c1",
+      "title": "Slide title",
+      "subtitle": "Brief subtitle",
+      "stepCount": "Step 1 of N",
+      "know": [
+        {"dot": "#hex", "name": "Item name", "note": "Detail about what we know"}
+      ],
+      "dontKnow": [
+        {"text": "Question or unknown that needs to be confirmed on this call"}
+      ],
+      "checklistItems": [
+        {"id": "unique-id", "name": "Short label", "dot": "#hex", "tbd": true}
+      ]
+    }
+  ]
+}
+
+Rules:
+- Always start with an overview slide listing all topics
+- Create one content slide per major topic (max 5 content slides)
+- Each content slide must have 3-5 "know" items and 2-4 "dontKnow" questions
+- Each content slide must have 2-4 checklist items for things to confirm
+- End with a "nextsteps" slide type with key decisions needed
+- Colors: c1=#E0F2FE/blue, c2=#DCFCE7/green, c3=#FEF3E2/amber, c4=#EDE7F6/purple, c5=#FEE2E2/red
+- Dot colors: known=#185FA5, SAP pull=#BA7517, calculated=#2E7D32, tbd/unknown=#E24B4A, manual=#888780
+- Return ONLY valid JSON, no markdown, no explanation`;
+
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'x-api-key': document.getElementById('api-key').value.trim()
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{role: 'user', content: 'Build a working session deck for this meeting:\n\n' + prompt}],
+        system: systemPrompt
+      })
+    });
+
+    var data = await response.json();
+    var raw = data.content[0].text;
+    var clean = raw.replace(/```json|```/g, '').trim();
+    var deck = JSON.parse(clean);
+
+    clearInterval(stTimer);
+    document.getElementById('status-box').classList.remove('show');
+    generatedHTML = buildHTML(deck);
+    showPreview(deck);
+
+  } catch(e) {
+    clearInterval(stTimer);
+    document.getElementById('status-box').classList.remove('show');
+    var errEl = document.getElementById('error-box');
+    errEl.textContent = 'Something went wrong building your deck. Please try again with more detail in your description.';
+    errEl.classList.add('show');
+    console.error(e);
+  }
+
+  btn.disabled = false;
+  btn.classList.remove('loading');
+}
+
+function showPreview(deck){
+  document.getElementById('preview-title').textContent = deck.title;
+  document.getElementById('preview-subtitle').textContent = deck.attendees + ' · ' + deck.date;
+
+  var sp = document.getElementById('slide-preview');
+  sp.innerHTML = '';
+
+  var colors = {c1:'#0C4A6E',c2:'#166534',c3:'#92400E',c4:'#4A148C',c5:'#991B1B'};
+  var bgs = {c1:'#E0F2FE',c2:'#DCFCE7',c3:'#FEF3E2',c4:'#EDE7F6',c5:'#FEE2E2'};
+
+  // Title slide
+  addSlidePreview(sp, '★', '#01405C', '#E0F2FE', 'Title slide', deck.title + ' · ' + (deck.attendees||''), ['cs']);
+
+  deck.slides.forEach(function(s, i){
+    if(s.type === 'overview'){
+      addSlidePreview(sp, '○', '#475569', '#F1F5F9', 'Overview — ' + s.title, s.goal, ['cs']);
+    } else if(s.type === 'content'){
+      var col = s.color || 'c1';
+      var tags = [];
+      if(s.know && s.know.length) tags.push({label: s.know.length + ' known items', cls: col});
+      if(s.dontKnow && s.dontKnow.length) tags.push({label: s.dontKnow.length + ' open questions', cls: 'c5'});
+      if(s.checklistItems && s.checklistItems.length) tags.push({label: s.checklistItems.length + ' checklist items', cls: 'cs'});
+      addSlidePreview(sp, s.num||String(i), colors[col]||'#0C4A6E', bgs[col]||'#E0F2FE', s.title, s.subtitle, tags.map(function(t){return t.cls;}), tags.map(function(t){return t.label;}));
+    } else if(s.type === 'nextsteps'){
+      addSlidePreview(sp, '✓', '#166534', '#DCFCE7', 'Next steps & decisions', 'Key items to walk away with', ['c2']);
+    }
+  });
+
+  // Summary slide
+  addSlidePreview(sp, '◈', '#288FC2', '#0D1B2A', 'Summary — Confirmed vs. Open', 'Auto-populated from checklists', ['cs']);
+
+  document.getElementById('preview-card').classList.add('show');
+}
+
+function addSlidePreview(container, num, numColor, numBg, title, desc, tagClasses, tagLabels){
+  var div = document.createElement('div');
+  div.className = 'sp-slide';
+  var tags = (tagLabels||['Interactive']).map(function(l,i){
+    return '<span class="sp-tag '+(tagClasses[i]||'cs')+'">'+l+'</span>';
+  }).join('');
+  div.innerHTML = '<div class="sp-num" style="background:'+numBg+';color:'+numColor+'">'+num+'</div>'+
+    '<div style="flex:1"><div class="sp-title">'+title+'</div><div class="sp-desc">'+desc+'</div>'+
+    '<div class="sp-tags">'+tags+'</div></div>';
+  container.appendChild(div);
+}
+
+function buildHTML(deck){
+  var colorMap = {
+    c1:{bg:'#E0F2FE',color:'#0C4A6E'},c2:{bg:'#DCFCE7',color:'#166534'},
+    c3:{bg:'#FEF3E2',color:'#92400E'},c4:{bg:'#EDE7F6',color:'#4A148C'},
+    c5:{bg:'#FEE2E2',color:'#991B1B'}
+  };
+
+  var slideCount = 2 + deck.slides.length + 1; // title + slides + summary
+  var ids = ['sl0'];
+  var slideHTML = '';
+  var ckFields = {};
+  var slIndex = 1;
+
+  // Title slide
+  slideHTML += '<div class="slide s-title active" id="sl0"><div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="eyebrow">Newell Brands · IT OTC Team · Working Session</div><div class="accent"></div><h1>'+esc(deck.title)+'</h1><p class="sub">'+esc(deck.subtitle)+'</p></div><div class="title-footer"><span>'+esc(deck.jiras||'')+(deck.jiras?' · ':'')+esc(deck.date)+'</span><span>'+esc(deck.attendees)+'</span></div></div>';
+
+  deck.slides.forEach(function(s){
+    var id = 'sl'+slIndex;
+    ids.push(id);
+
+    if(s.type === 'overview'){
+      var items = (s.items||[]).map(function(item, i){
+        var cc = ['c1','c2','c3','c4','c5'][i%5];
+        var cm = colorMap[cc];
+        var typeLabel = item.type==='pull'?'PULL from SAP':item.type==='push'?'PUSH to SAP':item.type==='confirm'?'TO CONFIRM':'DISCUSS';
+        var typeCls = item.type==='pull'||item.type==='push'?'pull':'push';
+        return '<div class="req-item"><div class="req-num '+cc+'">'+esc(String(i+1))+'</div><div><div class="req-title">'+esc(item.title)+'</div><div class="req-desc">'+esc(item.desc)+'</div><span class="req-type '+typeCls+'">'+typeLabel+'</span></div></div>';
+      }).join('');
+      slideHTML += '<div class="slide s-overview" id="'+id+'"><div class="slide-label">What we\'re aligning on today</div><div class="req-list">'+items+'</div><div class="goal-box"><strong>Goal of this call:</strong> '+esc(s.goal)+'</div></div>';
+    }
+
+    else if(s.type === 'content'){
+      var col = s.color || 'c1';
+      var cm = colorMap[col] || colorMap.c1;
+      var knowHTML = (s.know||[]).map(function(k){
+        return '<div class="know-item"><div class="k-dot" style="background:'+esc(k.dot||'#185FA5')+'"></div><div><div class="k-name">'+esc(k.name)+'</div><div class="k-note">'+esc(k.note)+'</div></div></div>';
+      }).join('');
+      var dkHTML = (s.dontKnow||[]).map(function(q){
+        return '<div class="dk-item"><p>'+esc(q.text||q)+'</p></div>';
+      }).join('');
+      if(s.checklistItems && s.checklistItems.length){
+        ckFields[slIndex] = s.checklistItems.map(function(c){
+          return {id:c.id, name:c.name, dot:c.dot||'#E24B4A', tbd:c.tbd!==false};
+        });
+      }
+      slideHTML += '<div class="slide s-content" id="'+id+'"><div class="slide-top"><div style="display:flex;align-items:center;gap:12px"><div class="step-circle '+col+'">'+esc(String(s.num||''))+'</div><div><p class="slide-title-text">'+esc(s.title)+'</p><p class="slide-title-sub">'+esc(s.subtitle||'')+'</p></div></div><span class="slide-step-count">'+esc(s.stepCount||'')+'</span></div><div class="two-col"><div class="col-box col-know"><div class="col-label">What we know</div>'+knowHTML+'</div><div class="col-box col-dk"><div class="col-label">What we don\'t know</div>'+dkHTML+'</div></div><div class="ck-strip"><div class="ck-strip-label">Confirm during discussion</div><div class="ck-items" id="ck'+slIndex+'"></div></div></div>';
+    }
+
+    else if(s.type === 'nextsteps'){
+      var decHTML = (s.decisions||[]).map(function(d){
+        return '<div class="know-item"><div class="k-dot" style="background:#288FC2"></div><div><div class="k-name">'+esc(d.title||d)+'</div>'+(d.note?'<div class="k-note">'+esc(d.note)+'</div>':'')+'</div></div>';
+      }).join('');
+      slideHTML += '<div class="slide s-content" id="'+id+'"><div class="slide-top"><div style="display:flex;align-items:center;gap:12px"><div class="step-circle c2">✓</div><div><p class="slide-title-text">Next steps</p><p class="slide-title-sub">What we need to walk away with today</p></div></div><span class="slide-step-count">Wrap up</span></div><div class="two-col"><div class="col-box col-know"><div class="col-label">Decisions needed today</div>'+decHTML+'</div><div class="col-box" style="background:#F8FAFC;border:.5px solid #E4E7EB"><div class="col-label" style="color:#288FC2">References</div><div class="know-item"><div class="k-dot" style="background:#0C4A6E"></div><div><div class="k-name">Jira tickets</div><div class="k-note">'+esc(deck.jiras||'See project Jiras for full context')+'</div></div></div></div></div><div class="ck-strip"><div class="ck-strip-label">Mark items confirmed</div><div class="ck-items" id="ck'+slIndex+'"></div></div></div>';
+      if(s.checklistItems && s.checklistItems.length){
+        ckFields[slIndex] = s.checklistItems.map(function(c){return {id:c.id,name:c.name,dot:c.dot||'#288FC2',tbd:true};});
+      }
+    }
+
+    slIndex++;
+  });
+
+  // Summary slide
+  var summaryId = 'sl'+slIndex;
+  ids.push(summaryId);
+  slideHTML += '<div class="slide s-summary" id="'+summaryId+'"><div style="margin-bottom:20px"><p style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#288FC2;margin-bottom:8px">Call summary</p><h2 style="font-size:26px;font-weight:700;color:#fff;letter-spacing:-.02em">What we confirmed · what\'s still open</h2></div><div class="sum-grid"><div class="sum-col sum-confirmed"><div class="sum-label">✔ Confirmed</div><div id="sum-confirmed-list"><p style="font-size:13px;color:rgba(255,255,255,0.4)">Check off items on each slide to populate this list</p></div></div><div class="sum-col sum-open"><div class="sum-label">○ Still open</div><div id="sum-open-list"><p style="font-size:13px;color:rgba(255,255,255,0.4)">Unconfirmed items will appear here</p></div></div></div></div>';
+
+  var N = ids.length;
+  var ckFieldsJSON = JSON.stringify(ckFields);
+  var idsJSON = JSON.stringify(ids);
+
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(deck.title)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Plus Jakarta Sans",sans-serif;background:#0D1B2A;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.deck{flex:1;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 56px;opacity:0;transform:translateX(40px);transition:opacity .4s ease,transform .4s ease;pointer-events:none}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:all}
+.slide.exit{opacity:0;transform:translateX(-40px)}
+.s-title{background:#0D1B2A;justify-content:center}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#288FC2;margin-bottom:16px}
+.accent{width:44px;height:3px;background:#288FC2;border-radius:2px;margin-bottom:22px}
+.s-title h1{font-size:44px;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.03em;max-width:560px}
+.s-title .sub{font-size:15px;color:rgba(255,255,255,0.4);margin-top:12px;max-width:460px;line-height:1.6}
+.title-footer{border-top:.5px solid rgba(255,255,255,0.07);padding-top:13px;display:flex;justify-content:space-between;margin-top:auto;font-size:11px;color:rgba(255,255,255,0.2)}
+.s-overview{background:#fff}
+.slide-label{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#288FC2;margin-bottom:20px}
+.req-list{display:flex;flex-direction:column;gap:12px;flex:1}
+.req-item{display:flex;gap:16px;align-items:flex-start;padding:16px 18px;border-radius:12px;border:1px solid #E4E7EB}
+.req-num{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.req-title{font-size:15px;font-weight:600;color:#0D1B2A;margin-bottom:3px}
+.req-desc{font-size:13px;color:#666;line-height:1.5}
+.req-type{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:5px}
+.pull{background:#E0F2FE;color:#0C4A6E}.push{background:#DCFCE7;color:#166534}
+.goal-box{margin-top:14px;background:#0D1B2A;border-radius:10px;padding:14px 18px;font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6}
+.goal-box strong{color:#fff}
+.s-content{background:#fff}
+.slide-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.step-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.slide-title-text{font-size:24px;font-weight:700;color:#0D1B2A;letter-spacing:-.02em;line-height:1.2}
+.slide-title-sub{font-size:12px;color:#888;margin-top:2px}
+.slide-step-count{font-size:11px;color:#ccc;letter-spacing:.08em;text-transform:uppercase}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;min-height:0}
+.col-box{border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.col-know{background:#F8FAFC;border:.5px solid #E4E7EB}
+.col-dk{background:#FEF3F2;border:.5px solid #FECACA}
+.col-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.col-know .col-label{color:#288FC2}.col-dk .col-label{color:#E24B4A}
+.know-item{display:flex;gap:9px;align-items:flex-start}
+.k-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.k-name{font-size:13px;font-weight:500;color:#111}
+.k-note{font-size:11px;color:#666;margin-top:1px;line-height:1.4}
+.dk-item{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;background:rgba(255,255,255,0.6);border-radius:7px}
+.dk-item p{font-size:13px;color:#7F1D1D;line-height:1.5}
+.ck-strip{margin-top:14px;padding-top:12px;border-top:.5px solid #E4E7EB}
+.ck-strip-label{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin-bottom:8px}
+.ck-items{display:flex;flex-wrap:wrap;gap:7px}
+.ck-item{display:flex;align-items:center;gap:7px;padding:5px 10px;border-radius:20px;cursor:pointer;border:.5px solid #E4E7EB;background:#F8F9FA;transition:all .15s;user-select:none}
+.ck-item.done{background:#F0FDF4;border-color:#86EFAC}
+.ck-item.tbd{background:#FEF2F2;border-color:#FECACA}
+.ck-circle{width:16px;height:16px;border-radius:50%;border:1.5px solid #CBD5E1;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ck-item.done .ck-circle{background:#059669;border-color:#059669}
+.ck-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ck-name{font-size:12px;font-weight:500;color:#333}
+.ck-item.done .ck-name{color:#888;text-decoration:line-through}
+.s-summary{background:#0D1B2A}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;overflow-y:auto}
+.sum-col{border-radius:12px;padding:16px 18px}
+.sum-confirmed{background:rgba(5,150,105,0.12);border:.5px solid rgba(5,150,105,0.3)}
+.sum-open{background:rgba(239,68,68,0.1);border:.5px solid rgba(239,68,68,0.3)}
+.sum-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.sum-confirmed .sum-label{color:#4ADE80}.sum-open .sum-label{color:#FCA5A5}
+.sum-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:.5px solid rgba(255,255,255,0.06)}
+.sum-item:last-child{border-bottom:none}
+.sum-item-name{font-size:13px;color:#fff;font-weight:500}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;background:#0D1B2A;flex-shrink:0}
+.ndots{display:flex;gap:6px}
+.ndot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.18);cursor:pointer;border:none;transition:all .3s}
+.ndot.active{background:#288FC2;transform:scale(1.5)}
+.nbtns{display:flex;gap:8px}
+.nbtn{font-family:"Plus Jakarta Sans",sans-serif;font-size:12px;font-weight:500;padding:6px 16px;border-radius:8px;cursor:pointer;border:.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.65);transition:background .2s}
+.nbtn:hover:not(:disabled){background:rgba(255,255,255,0.12)}
+.nbtn:disabled{opacity:.2;cursor:default}
+.nbtn.p{background:#288FC2;border-color:#288FC2;color:#fff}
+.c1{background:#E0F2FE;color:#0C4A6E}.c2{background:#DCFCE7;color:#166534}
+.c3{background:#FEF3E2;color:#92400E}.c4{background:#EDE7F6;color:#4A148C}.c5{background:#FEE2E2;color:#991B1B}
+</style></head>
+<body>
+<div class="deck">
+${slideHTML}
+</div>
+<div class="nav">
+  <div style="font-size:11px;color:rgba(255,255,255,0.3)">${esc(deck.title)}</div>
+  <div class="ndots" id="ndots"></div>
+  <div class="nbtns">
+    <button class="nbtn" id="bp" onclick="go(-1)" disabled>← Back</button>
+    <button class="nbtn p" id="bn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+<script>
+var ckFields=${ckFieldsJSON};
+var confirmed={};
+var N=${N};var cur=0;
+var ids=${idsJSON};
+var dc=document.getElementById('ndots');
+for(var i=0;i<N;i++){var d=document.createElement('button');d.className='ndot'+(i===0?' active':'');d.id='nd'+i;(function(n){d.onclick=function(){goTo(n);};})(i);dc.appendChild(d);}
+function renderCk(s){var c=document.getElementById('ck'+s);if(!c)return;var fields=ckFields[s]||[];if(!fields.length){return;}c.innerHTML='';fields.forEach(function(f){var el=document.createElement('div');var isDone=confirmed[f.id];el.className='ck-item'+(isDone?' done':' tbd');el.onclick=function(){confirmed[f.id]=!confirmed[f.id];renderAllCk();updateSummary();};el.innerHTML='<div class="ck-circle">'+(isDone?'<svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4l3 3L9 1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</div><div class="ck-dot" style="background:'+f.dot+'"></div><span class="ck-name">'+f.name+'</span>';c.appendChild(el);});}
+function renderAllCk(){Object.keys(ckFields).forEach(function(k){renderCk(parseInt(k));});}
+function updateSummary(){var all=[];Object.keys(ckFields).forEach(function(k){(ckFields[k]||[]).forEach(function(f){all.push(f);});});var conf=all.filter(function(f){return confirmed[f.id];});var open=all.filter(function(f){return !confirmed[f.id];});var cl=document.getElementById('sum-confirmed-list');var ol=document.getElementById('sum-open-list');cl.innerHTML=conf.length?conf.map(function(f){return '<div class="sum-item"><div style="width:7px;height:7px;border-radius:50%;background:'+f.dot+';flex-shrink:0;margin-top:4px"></div><div><div class="sum-item-name">'+f.name+'</div></div></div>';}).join(''):'<p style="font-size:13px;color:rgba(255,255,255,0.3)">Nothing confirmed yet</p>';ol.innerHTML=open.length?open.map(function(f){return '<div class="sum-item"><div style="width:7px;height:7px;border-radius:50%;background:'+f.dot+';flex-shrink:0;margin-top:4px"></div><div><div class="sum-item-name">'+f.name+'</div></div></div>';}).join(''):'<p style="font-size:13px;color:rgba(255,255,255,0.3)">All items confirmed!</p>';}
+function goTo(n){var p=document.getElementById(ids[cur]);if(p){p.classList.remove('active');p.classList.add('exit');setTimeout(function(){p.classList.remove('exit');},400);}cur=n;var nx=document.getElementById(ids[cur]);if(nx)nx.classList.add('active');document.getElementById('bp').disabled=cur===0;var bn=document.getElementById('bn');bn.disabled=cur===N-1;bn.textContent=cur===N-1?'Done ✓':'Next →';for(var i=0;i<N;i++)document.getElementById('nd'+i).classList.toggle('active',i===cur);if(cur===N-1)updateSummary();}
+function go(d){var n=Math.max(0,Math.min(N-1,cur+d));if(n!==cur)goTo(n);}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);});
+renderAllCk();updateSummary();
+<\/script>
+</body></html>`;
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;'); }
+
+function openPreview(){
+  var w = window.open('', '_blank');
+  w.document.write(generatedHTML);
+  w.document.close();
+}
+
+function downloadDeck(){
+  var title = document.getElementById('preview-title').textContent || 'working-session-deck';
+  var fname = title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '.html';
+  var blob = new Blob([generatedHTML], {type:'text/html'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  a.click();
+}
+</script>
+</body>
+</html>

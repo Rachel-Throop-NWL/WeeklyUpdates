@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT OTC Dashboard — Rachel Throop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --surface2: #f1efe9;
+    --border: #e4e2da;
+    --border2: #cccab f;
+    --text: #1a1916;
+    --text2: #6b6960;
+    --text3: #9b998f;
+    --blue: #185fa5;
+    --blue-bg: #e6f1fb;
+    --blue-text: #0c447c;
+    --amber: #ba7517;
+    --amber-bg: #faeeda;
+    --amber-text: #854f0b;
+    --red: #a32d2d;
+    --red-bg: #fcebeb;
+    --red-text: #791f1f;
+    --green: #3b6d11;
+    --green-bg: #eaf3de;
+    --green-text: #27500a;
+    --teal-bg: #e1f5ee;
+    --teal-text: #085041;
+    --accent: #185fa5;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .top-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .top-bar-left { display: flex; align-items: center; gap: 12px; }
+
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .top-bar-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .top-bar-sub { font-size: 12px; color: var(--text3); margin-left: 8px; }
+
+  .ooo-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--amber-bg); color: var(--amber-text);
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    border: 1px solid #f0c97a;
+  }
+  .ooo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
+
+  .page { max-width: 1100px; margin: 0 auto; padding: 2rem 2rem 4rem; }
+
+  .page-header { margin-bottom: 1.75rem; }
+  .page-header h1 { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .page-header p { font-size: 13px; color: var(--text2); margin-top: 3px; }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 2rem; }
+
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .metric-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .metric-value { font-size: 28px; font-weight: 600; color: var(--text); letter-spacing: -0.03em; line-height: 1; }
+  .metric-sub { font-size: 11px; color: var(--text3); margin-top: 5px; }
+  .metric-card.alert .metric-value { color: var(--red); }
+  .metric-card.warn .metric-value { color: var(--amber); }
+
+  .section-header {
+    font-size: 11px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 12px; margin-top: 2rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-header::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .proj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .proj-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    transition: box-shadow 0.15s;
+  }
+  .proj-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+
+  .proj-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .proj-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .proj-date { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-warn { background: var(--amber-bg); color: var(--amber-text); border: 1px solid #f0c97a; }
+  .badge-ok { background: var(--green-bg); color: var(--green-text); border: 1px solid #b6d98a; }
+  .badge-info { background: var(--blue-bg); color: var(--blue-text); border: 1px solid #a8caf0; }
+  .badge-red { background: var(--red-bg); color: var(--red-text); border: 1px solid #f0a8a8; }
+
+  .proj-next {
+    font-size: 12px; color: var(--text2);
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--border2);
+  }
+  .proj-next strong { color: var(--text); font-weight: 500; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip {
+    font-size: 11px; font-weight: 500;
+    padding: 3px 8px; border-radius: var(--radius-sm);
+    background: var(--surface2); color: var(--text2);
+    border: 1px solid var(--border);
+    cursor: default;
+  }
+  .chip-blocked { background: var(--red-bg); color: var(--red-text); border-color: #f0a8a8; }
+  .chip-waiting { background: var(--amber-bg); color: var(--amber-text); border-color: #f0c97a; }
+  .chip-done { background: var(--green-bg); color: var(--green-text); border-color: #b6d98a; }
+  .chip-deploy { background: var(--blue-bg); color: var(--blue-text); border-color: #a8caf0; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+
+  .panel-title {
+    font-size: 12px; font-weight: 600; color: var(--text);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .panel-title-icon { font-size: 14px; }
+
+  .blocker-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .blocker-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .dot-red { background: var(--red); }
+  .dot-amber { background: var(--amber); }
+  .dot-green { background: var(--green); }
+  .dot-blue { background: var(--blue); }
+  .blocker-text { color: var(--text2); line-height: 1.5; }
+  .blocker-text strong { color: var(--text); font-weight: 500; }
+
+  .date-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .date-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .date-pill {
+    font-size: 10px; font-weight: 600;
+    padding: 3px 8px; border-radius: 20px;
+    min-width: 52px; text-align: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    text-transform: uppercase; letter-spacing: 0.03em;
+  }
+  .date-urgent { background: var(--red-bg); color: var(--red-text); border: 1px solid #f0a8a8; }
+  .date-soon { background: var(--amber-bg); color: var(--amber-text); border: 1px solid #f0c97a; }
+  .date-future { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .date-text { color: var(--text2); line-height: 1.5; }
+  .date-text strong { color: var(--text); font-weight: 500; }
+
+  .people-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+
+  .person-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+    transition: border-color 0.15s;
+  }
+  .person-card:hover { border-color: var(--accent); }
+
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; flex-shrink: 0;
+  }
+  .av-blue { background: var(--blue-bg); color: var(--blue-text); }
+  .av-amber { background: var(--amber-bg); color: var(--amber-text); }
+  .av-teal { background: var(--teal-bg); color: var(--teal-text); }
+  .av-green { background: var(--green-bg); color: var(--green-text); }
+
+  .person-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .person-note { font-size: 11px; color: var(--text3); line-height: 1.35; margin-top: 1px; }
+
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-text { font-size: 11px; color: var(--text3); }
+  .footer-links { display: flex; gap: 16px; }
+  .footer-links a {
+    font-size: 11px; color: var(--blue);
+    text-decoration: none; font-weight: 500;
+  }
+  .footer-links a:hover { text-decoration: underline; }
+
+  .updated-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--text3);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+
+  @media (max-width: 768px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .proj-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .people-grid { grid-template-columns: 1fr 1fr; }
+    .page { padding: 1rem 1rem 3rem; }
+    .top-bar { padding: 0 1rem; }
+    .top-bar-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-bar">
+  <div class="top-bar-left">
+    <div class="logo-mark">IT</div>
+    <span class="top-bar-title">OTC Dashboard</span>
+    <span class="top-bar-sub">Rachel Throop · Newell Brands</span>
+  </div>
+  <div class="ooo-chip">
+    <div class="ooo-dot"></div>
+    OOO June 12–18 · Returns June 19
+  </div>
+</nav>
+
+<main class="page">
+
+  <div class="page-header">
+    <h1>IT OTC — Project Briefing</h1>
+    <p>Week of June 9, 2026 &nbsp;·&nbsp; IT Manager, Salesforce &amp; SAP Order-to-Cash &nbsp;·&nbsp; <span class="updated-badge">Last updated June 11, 2026</span></p>
+  </div>
+
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="metric-label">Active projects</div>
+      <div class="metric-value">4</div>
+      <div class="metric-sub">eBids · PoP · MAPA EMEA · Intl</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Open Jiras</div>
+      <div class="metric-value">18</div>
+      <div class="metric-sub">Across all projects</div>
+    </div>
+    <div class="metric-card alert">
+      <div class="metric-label">Blocked</div>
+      <div class="metric-value">2</div>
+      <div class="metric-sub">SFDC-25966 · SFDC-25890</div>
+    </div>
+    <div class="metric-card warn">
+      <div class="metric-label">Days to go-live</div>
+      <div class="metric-value">173</div>
+      <div class="metric-sub">eBids + PoP · Dec 1, 2026</div>
+    </div>
+  </div>
+
+  <div class="section-header">Projects</div>
+  <div class="proj-grid">
+
+    <div class="proj-card">
+      <div class="proj-head">
+        <div>
+          <div class="proj-name">eBids Migration</div>
+          <div class="proj-date">Go-live Dec 1, 2026</div>
+        </div>
+        <span class="badge badge-warn">🟡 In Development</span>
+      </div>
+      <div class="proj-next">Next: Identify where <strong>List Price &amp; Distributor Price</strong> live in SAP for nightly batch · Working session to schedule with Prasad, Dom/Miltos &amp; Dawn Wiggins on return</div>
+      <div class="chip-row">
+        <span class="chip">SFDC-25059</span>
+        <span class="chip chip-waiting">SFDC-25395 ⏳</span>
+        <span class="chip chip-waiting">SFDC-25402 ⏳</span>
+        <span class="chip">SFDC-25405</span>
+        <span class="chip chip-done">SFDC-25604 ✓</span>
+        <span class="chip chip-waiting">SFDC-25949 ⏳</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-head">
+        <div>
+          <div class="proj-name">PoP Migration</div>
+          <div class="proj-date">Go-live Dec 1, 2026 · Epic SFDC-25709</div>
+        </div>
+        <span class="badge badge-warn">🟡 Spec In Progress</span>
+      </div>
+      <div class="proj-next">Next: Spec assigned to <strong>Venkat</strong> for initial review · SAP integration Jiras (Stories A–F) to create June 19 · Real-time vs. batch decision June 22</div>
+      <div class="chip-row">
+        <span class="chip">SFDC-25709</span>
+        <span class="chip">SFDC-25060</span>
+        <span class="chip">SFDC-25708</span>
+        <span class="chip chip-blocked">SFDC-25966 🔴</span>
+        <span class="chip">SFDC-25891</span>
+        <span class="chip chip-waiting">SFDC-25890 ⏳</span>
+        <span class="chip">SFDC-25892</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-head">
+        <div>
+          <div class="proj-name">MAPA EMEA Samples</div>
+          <div class="proj-date">Go-live Oct 1, 2026 · Epic SFDC-25051</div>
+        </div>
+        <span class="badge badge-warn">🟡 WITL Starts Jun 15</span>
+      </div>
+      <div class="proj-next">Next: <strong>Nancy</strong> moves SFDC-25170 to SFC June 16 · Cedric &amp; Karen Chavis test in RQ2 · SFDC-25908 approval rebuild July sprint</div>
+      <div class="chip-row">
+        <span class="chip">SFDC-25051</span>
+        <span class="chip">SFDC-25170</span>
+        <span class="chip chip-deploy">SFDC-25050 Test</span>
+        <span class="chip chip-done">SFDC-24971 ✓</span>
+        <span class="chip chip-waiting">SFDC-25908 ⏳</span>
+        <span class="chip chip-done">SFDC-25974 ✓</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-head">
+        <div>
+          <div class="proj-name">International IT</div>
+          <div class="proj-date">ANZ · APAC · EMEA · LATAM</div>
+        </div>
+        <span class="badge badge-ok">🟢 Active</span>
+      </div>
+      <div class="proj-next">Next: All region Jiras waiting on testing results or rolling to next sprint · No action needed before June 19</div>
+      <div class="chip-row">
+        <span class="chip chip-deploy">SFDC-25931 Test</span>
+        <span class="chip chip-deploy">SFDC-25611 Deploy</span>
+        <span class="chip chip-waiting">SFDC-25661 ⏳</span>
+        <span class="chip">SFDC-25662</span>
+        <span class="chip">SFDC-25600</span>
+        <span class="chip">SFDC-24764</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-header" style="margin-top: 2rem;">Open items &amp; key dates</div>
+  <div class="two-col">
+
+    <div class="panel">
+      <div class="panel-title"><span class="panel-title-icon">⚠️</span> Blockers &amp; waiting</div>
+      <div class="blocker-row"><div class="dot dot-red"></div><div class="blocker-text"><strong>SFDC-25966</strong> — ZCMIR SF Dev response pending · blocks SFDC-25708 Subtask 3</div></div>
+      <div class="blocker-row"><div class="dot dot-amber"></div><div class="blocker-text"><strong>SFDC-25890</strong> — Error handling · waiting on Sandra error code list</div></div>
+      <div class="blocker-row"><div class="dot dot-amber"></div><div class="blocker-text"><strong>SFDC-25395</strong> — SAP List/Distributor Price field identification · unowned · schedule working session on return</div></div>
+      <div class="blocker-row"><div class="dot dot-amber"></div><div class="blocker-text"><strong>SFDC-25949</strong> — Pricing floors testing · waiting on Vineet</div></div>
+      <div class="blocker-row"><div class="dot dot-amber"></div><div class="blocker-text"><strong>SFDC-25661</strong> — EMEA Custom Contact Report · waiting on Tracy</div></div>
+      <div class="blocker-row"><div class="dot dot-amber"></div><div class="blocker-text"><strong>eBids</strong> — GM% formula + price increase tool criteria · pending from Sandra</div></div>
+      <div class="blocker-row"><div class="dot dot-blue"></div><div class="blocker-text"><strong>PoP SAP Stories A–F</strong> — Jiras to create on return June 19</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span class="panel-title-icon">📅</span> Key dates</div>
+      <div class="date-row"><span class="date-pill date-urgent">Jun 12</span><div class="date-text"><strong>Rachel OOO begins</strong> · Test region field before EOD today</div></div>
+      <div class="date-row"><span class="date-pill date-soon">Jun 15</span><div class="date-text">Sprint release · MAPA EMEA WITL begins in RQ2</div></div>
+      <div class="date-row"><span class="date-pill date-soon">Jun 16</span><div class="date-text">Nancy moves SFDC-25170 to SFC · creates testing tasks</div></div>
+      <div class="date-row"><span class="date-pill date-future">Jun 19</span><div class="date-text"><strong>Rachel returns</strong> · Create PoP SAP Jiras · split SFDC-25060 · schedule working sessions</div></div>
+      <div class="date-row"><span class="date-pill date-future">Jun 22</span><div class="date-text">PoP real-time vs. batch meeting · pricing working session</div></div>
+      <div class="date-row"><span class="date-pill date-future">Jun 23</span><div class="date-text">Weekly business sync begins (Sandra, Karen, Bill)</div></div>
+      <div class="date-row"><span class="date-pill date-future">Oct 1</span><div class="date-text">MAPA EMEA go-live</div></div>
+      <div class="date-row"><span class="date-pill date-future">Dec 1</span><div class="date-text">eBids + PoP go-live</div></div>
+    </div>
+
+  </div>
+
+  <div class="section-header" style="margin-top: 2rem;">Ping today before OOO</div>
+  <div class="people-grid">
+    <div class="person-card"><div class="avatar av-blue">NT</div><div><div class="person-name">Nancy Tang</div><div class="person-note">Confirm Jun 16 SFC move + testing tasks</div></div></div>
+    <div class="person-card"><div class="avatar av-blue">VK</div><div><div class="person-name">Venkat Kuttua</div><div class="person-note">PoP spec assigned · any blockers before OOO?</div></div></div>
+    <div class="person-card"><div class="avatar av-amber">SS</div><div><div class="person-name">Sandra Smith</div><div class="person-note">GM% formula · error code list</div></div></div>
+    <div class="person-card"><div class="avatar av-teal">PK</div><div><div class="person-name">Prasad K</div><div class="person-note">SAP pricing field identification</div></div></div>
+    <div class="person-card"><div class="avatar av-blue">MC</div><div><div class="person-name">Mike Conti</div><div class="person-note">OOO handoff · SAP pricing nudge</div></div></div>
+    <div class="person-card"><div class="avatar av-green">DW</div><div><div class="person-name">Dawn Wiggins</div><div class="person-note">Include in SAP pricing working session</div></div></div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">Rachel Throop · IT Manager, Salesforce &amp; SAP OTC · Newell Brands · Updated June 11, 2026</div>
+    <div class="footer-links">
+      <a href="https://rachel-throop-nwl.github.io/IT-Toolbox/" target="_blank">IT Toolbox</a>
+      <a href="https://newell-it.atlassian.net" target="_blank">Jira</a>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

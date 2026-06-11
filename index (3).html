@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rachel's IT Toolbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f1efe9; --border: #e4e2da;
+    --text: #1a1916; --text2: #6b6960; --text3: #9b998f;
+    --blue: #185fa5; --blue-bg: #e6f1fb; --blue-text: #0c447c;
+    --amber: #ba7517; --amber-bg: #faeeda; --amber-text: #854f0b;
+    --red: #a32d2d; --red-bg: #fcebeb; --red-text: #791f1f;
+    --green: #3b6d11; --green-bg: #eaf3de; --green-text: #27500a;
+    --purple: #5b3fa6; --purple-bg: #f0ecfb; --purple-text: #3d2578;
+    --radius: 12px; --radius-sm: 6px;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+
+  /* HEADER */
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2.5rem;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .site-header-left { display: flex; align-items: center; gap: 10px; }
+  .logo { width: 30px; height: 30px; background: var(--text); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 600; letter-spacing: -0.02em; }
+  .site-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .site-sub { font-size: 12px; color: var(--text3); margin-left: 4px; }
+  .header-meta { font-size: 11px; color: var(--text3); }
+
+  /* HERO */
+  .hero { padding: 3rem 2.5rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .hero h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.03em; color: var(--text); margin-bottom: 8px; }
+  .hero p { font-size: 15px; color: var(--text2); max-width: 560px; line-height: 1.6; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .hero-tag { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+  /* PAGE */
+  .page { max-width: 1100px; margin: 0 auto; padding: 0 2.5rem 4rem; }
+
+  /* SECTION */
+  .section { margin-bottom: 3rem; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .section-title { font-size: 16px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .section-title-icon { font-size: 18px; }
+  .section-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .section-badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+  .badge-amber { background: var(--amber-bg); color: var(--amber-text); border: 1px solid #f0c97a; }
+  .badge-green { background: var(--green-bg); color: var(--green-text); border: 1px solid #b6d98a; }
+  .badge-blue { background: var(--blue-bg); color: var(--blue-text); border: 1px solid #a8caf0; }
+  .badge-purple { background: var(--purple-bg); color: var(--purple-text); border: 1px solid #c8b8f0; }
+  .badge-grey { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+  /* CARD GRID */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex; flex-direction: column;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    text-decoration: none; color: inherit;
+  }
+  .card:hover { box-shadow: 0 2px 14px rgba(0,0,0,0.08); border-color: #bbb9b0; }
+  .card-icon { font-size: 22px; margin-bottom: 10px; }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .card-desc { font-size: 12px; color: var(--text2); line-height: 1.5; flex: 1; margin-bottom: 12px; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .card-tag { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 20px; background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+  .card-tag-blue { background: var(--blue-bg); color: var(--blue-text); border-color: #a8caf0; }
+  .card-tag-amber { background: var(--amber-bg); color: var(--amber-text); border-color: #f0c97a; }
+  .card-tag-green { background: var(--green-bg); color: var(--green-text); border-color: #b6d98a; }
+  .card-tag-purple { background: var(--purple-bg); color: var(--purple-text); border-color: #c8b8f0; }
+  .card-link { font-size: 12px; font-weight: 500; color: var(--blue); white-space: nowrap; }
+  .card-link:hover { text-decoration: underline; }
+  .card.muted { opacity: 0.6; pointer-events: none; }
+  .card.muted .card-link { color: var(--text3); }
+
+  /* JIRA REF */
+  .jira-ref { font-size: 10px; font-weight: 600; color: var(--blue); background: var(--blue-bg); border: 1px solid #a8caf0; padding: 2px 7px; border-radius: var(--radius-sm); margin-top: 6px; display: inline-block; }
+
+  /* HOW IT WORKS */
+  .how-it-works { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; margin-bottom: 3rem; }
+  .how-title { font-size: 13px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .how-item { display: flex; align-items: flex-start; gap: 12px; }
+  .how-num { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text2); flex-shrink: 0; margin-top: 1px; }
+  .how-text-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .how-text-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  /* FOOTER */
+  .footer { border-top: 1px solid var(--border); padding: 1.5rem 2.5rem; display: flex; align-items: center; justify-content: space-between; }
+  .footer-text { font-size: 11px; color: var(--text3); }
+  .footer-link { font-size: 11px; color: var(--blue); text-decoration: none; font-weight: 500; }
+  .footer-link:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .hero { padding: 2rem 1.25rem 1.5rem; }
+    .page { padding: 0 1.25rem 3rem; }
+    .site-header { padding: 0 1.25rem; }
+    .site-sub { display: none; }
+    .card-grid { grid-template-columns: 1fr; }
+    .how-grid { grid-template-columns: 1fr; }
+    .footer { flex-direction: column; gap: 6px; padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-left">
+    <div class="logo">IT</div>
+    <span class="site-name">Rachel's IT Toolbox</span>
+    <span class="site-sub">Rachel Throop · Newell Brands</span>
+  </div>
+  <span class="header-meta">OTC · Salesforce &amp; SAP · June 2026</span>
+</header>
+
+<div class="hero">
+  <h1>🧰 Rachel's IT Toolbox</h1>
+  <p>Interactive tools and resources built for the OTC team — project hubs, working session decks, templates, status reports, and manager handoffs.</p>
+  <div class="hero-tags">
+    <span class="hero-tag">eBids Migration</span>
+    <span class="hero-tag">PoP Migration</span>
+    <span class="hero-tag">MAPA EMEA</span>
+    <span class="hero-tag">International IT</span>
+    <span class="hero-tag">Go-Live Dec 1, 2026</span>
+  </div>
+</div>
+
+<main class="page">
+
+  <!-- PROJECTS -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="section-title-icon">🗂️</span> Projects</div>
+        <div class="section-desc">Active migration projects — mockups, specs, working session decks, and integration docs</div>
+      </div>
+      <span class="section-badge badge-amber">🟡 In Development</span>
+    </div>
+    <div class="card-grid">
+
+      <a href="projects/ebids-pop-project.html" class="card">
+        <div class="card-icon">📦</div>
+        <div class="card-title">eBids &amp; PoP — Project Hub</div>
+        <div class="card-desc">All interactive files for the eBids and PoP migration — mockups, working session decks, specs, status reports, and the communication planner.</div>
+        <div class="jira-ref">eBids · PoP · Go-Live Dec 1, 2026</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-amber">eBids</span>
+            <span class="card-tag card-tag-amber">PoP</span>
+            <span class="card-tag">6 files</span>
+          </div>
+          <span class="card-link">Open hub →</span>
+        </div>
+      </a>
+
+      <a href="projects/SFDC-25708-UI-Mockup.html" class="card">
+        <div class="card-icon">🏗️</div>
+        <div class="card-title">PoP Community — UI Mockup</div>
+        <div class="card-desc">Clickable UI mockup for the Distributor Community portal. Shows search, claim entry, upload history, and error handling screens.</div>
+        <div class="jira-ref">SFDC-25708</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-amber">PoP</span>
+            <span class="card-tag card-tag-blue">Salesforce</span>
+            <span class="card-tag">For Venkat</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="projects/SFDC-25708-PoP-Community-Design-Spec.html" class="card">
+        <div class="card-icon">📄</div>
+        <div class="card-title">PoP Community — Tech Spec</div>
+        <div class="card-desc">Full developer specification for SFDC-25708. Sections, field tables, validation rules, processing flow, error handling, and acceptance criteria.</div>
+        <div class="jira-ref">SFDC-25708</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-amber">PoP</span>
+            <span class="card-tag">Tech spec</span>
+            <span class="card-tag">For Venkat</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="projects/pop-sap-integration-deck.html" class="card">
+        <div class="card-icon">🔗</div>
+        <div class="card-title">PoP SAP Integration — Working Session Deck</div>
+        <div class="card-desc">Interactive deck for the PoP SAP integration call. Covers billing data pull, ZCMIR pull, and credit memo push with live checklists.</div>
+        <div class="jira-ref">SFDC-25060 · SFDC-25966</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-amber">PoP</span>
+            <span class="card-tag">SAP</span>
+            <span class="card-tag">Working session</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="projects/ebids-pricing-deck.html" class="card">
+        <div class="card-icon">💰</div>
+        <div class="card-title">eBids Pricing — Working Session Deck</div>
+        <div class="card-desc">Interactive deck for the eBids pricing requirements working session. Per-slide field checklists and a live summary of confirmed vs. open items.</div>
+        <div class="jira-ref">SFDC-25402 · SFDC-25405</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-amber">eBids</span>
+            <span class="card-tag">Pricing</span>
+            <span class="card-tag">Working session</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="projects/ebids-dev-call-jun16.html" class="card">
+        <div class="card-icon">👨‍💻</div>
+        <div class="card-title">eBids Dev Call — Reference Sheet</div>
+        <div class="card-desc">One-pager for the eBids dev call week of June 16. Jira status check, open questions on SAP BAPI pricing simulate, and attendee reference. Rachel OOO — Mike covering.</div>
+        <div class="jira-ref">SFDC-25059 · SFDC-25395 · SFDC-25402 · SFDC-25405</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-amber">eBids</span>
+            <span class="card-tag">Dev call</span>
+            <span class="card-tag">Jun 16</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- TEMPLATES & TOOLS -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="section-title-icon">🛠️</span> Templates &amp; Tools</div>
+        <div class="section-desc">Reusable tools for any project — grab a template, fill it in, make it yours</div>
+      </div>
+      <span class="section-badge badge-green">Free to use</span>
+    </div>
+    <div class="card-grid">
+
+      <a href="templates/project-communication-planner.html" class="card">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Project Communication Planner</div>
+        <div class="card-desc">Track stakeholders, meetings, decisions, and next steps for any project. Auto-saves to your browser. Use the snapshot button to share a clean read-only version.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag">PM tool</span>
+            <span class="card-tag">Auto-save</span>
+            <span class="card-tag">Any project</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="templates/working-session-deck-template.html" class="card">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Working Session Deck</div>
+        <div class="card-desc">Interactive slide deck for any working session or requirements call. Built-in what we know / what we don't know format with per-slide checklists and a live summary.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag">Working session</span>
+            <span class="card-tag">Checklists</span>
+            <span class="card-tag">Interactive</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="templates/deck-builder.html" class="card">
+        <div class="card-icon">✨</div>
+        <div class="card-title">Working Session Deck Builder</div>
+        <div class="card-desc">Describe your meeting in plain English and Claude builds the full interactive deck for you — title slide, checklists, and a live summary slide. No manual editing required.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-purple">AI-powered</span>
+            <span class="card-tag">Claude</span>
+            <span class="card-tag">Deck builder</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- STATUS & DASHBOARDS -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="section-title-icon">📊</span> Status &amp; Dashboards</div>
+        <div class="section-desc">Weekly status snapshots and the live OTC project dashboard</div>
+      </div>
+      <span class="section-badge badge-blue">Updated weekly</span>
+    </div>
+    <div class="card-grid">
+
+      <a href="MyWork/otc-dashboard.html" class="card">
+        <div class="card-icon">🖥️</div>
+        <div class="card-title">OTC Project Dashboard</div>
+        <div class="card-desc">Live briefing dashboard across all active projects — eBids, PoP, MAPA EMEA, and International IT. Blocked tickets, key dates, and people to ping.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag card-tag-blue">All projects</span>
+            <span class="card-tag">Jun 11, 2026</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+
+
+    </div>
+  </div>
+
+  <!-- MIKE'S FOLDER -->
+  <div class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-title"><span class="section-title-icon">👔</span> Mike's Folder</div>
+        <div class="section-desc">Status reports, OOO handoffs, HR items, and anything shared directly with Mike Conti</div>
+      </div>
+      <span class="section-badge badge-purple">Manager docs</span>
+    </div>
+    <div class="card-grid">
+
+      <a href="MC/ebids-dev-call-jun16.html" class="card">
+        <div class="card-icon">📋</div>
+        <div class="card-title">eBids Dev Call — Jun 16 Reference</div>
+        <div class="card-desc">One-pager for Mike to reference during the eBids dev call week of June 16 while Rachel is OOO. Jira status, open questions, and attendee list.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag">OOO handoff</span>
+            <span class="card-tag">Dev call</span>
+            <span class="card-tag">Jun 16</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="MC/status-jun09-2026.html" class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Weekly Status — June 9, 2026</div>
+        <div class="card-desc">Project status report for the week of June 9. Shared with Mike Conti.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag">Status</span>
+            <span class="card-tag">All projects</span>
+            <span class="card-tag">For Mike</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <a href="MC/status-jun04-simple.html" class="card">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Weekly Status — June 4, 2026</div>
+        <div class="card-desc">Project status report for the week of June 4. Shared with Mike Conti.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags">
+            <span class="card-tag">Status</span>
+            <span class="card-tag">All projects</span>
+            <span class="card-tag">For Mike</span>
+          </div>
+          <span class="card-link">Open →</span>
+        </div>
+      </a>
+
+      <div class="card muted">
+        <div class="card-icon">📁</div>
+        <div class="card-title">More docs coming</div>
+        <div class="card-desc">Status reports, HR items, and manager handoffs will be added here as they're created.</div>
+        <div class="card-footer" style="margin-top:12px;">
+          <div class="card-tags"><span class="card-tag">Coming soon</span></div>
+          <span class="card-link">—</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how-it-works">
+    <div class="how-title">How it works</div>
+    <div class="how-grid">
+      <div class="how-item">
+        <div class="how-num">1</div>
+        <div>
+          <div class="how-text-title">Share a link</div>
+          <div class="how-text-desc">Every tool has a live URL. Copy and send — no download, no login, works on any device.</div>
+        </div>
+      </div>
+      <div class="how-item">
+        <div class="how-num">2</div>
+        <div>
+          <div class="how-text-title">Use a template</div>
+          <div class="how-text-desc">Open any template, fill it in for your project, and it becomes yours. Auto-saves to your browser.</div>
+        </div>
+      </div>
+      <div class="how-item">
+        <div class="how-num">3</div>
+        <div>
+          <div class="how-text-title">Share a snapshot</div>
+          <div class="how-text-desc">Use the snapshot button in the communication planner to download a clean read-only version to share with your manager or team.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <span class="footer-text">Built by <strong>Rachel Throop</strong> · IT Manager, Salesforce &amp; SAP OTC · Newell Brands · June 2026 · Tools built with Claude</span>
+  <a href="https://claude.ai" class="footer-link">claude.ai ↗</a>
+</footer>
+
+</body>
+</html>

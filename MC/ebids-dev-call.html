@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eBids Dev Call — June 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f8f7f4; --surface: #ffffff; --surface2: #f1efe9; --border: #e4e2da;
+    --text: #1a1916; --text2: #6b6960; --text3: #9b998f;
+    --blue: #185fa5; --blue-bg: #e6f1fb; --blue-text: #0c447c;
+    --amber: #ba7517; --amber-bg: #faeeda; --amber-text: #854f0b;
+    --red: #a32d2d; --red-bg: #fcebeb; --red-text: #791f1f;
+    --green: #3b6d11; --green-bg: #eaf3de; --green-text: #27500a;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+  .page { max-width: 860px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+  .header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 6px; }
+  .header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+  .header p { font-size: 13px; color: var(--text2); }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .chip-warn { background: var(--amber-bg); color: var(--amber-text); border: 1px solid #f0c97a; }
+  .chip-ok { background: var(--green-bg); color: var(--green-text); border: 1px solid #b6d98a; }
+  .chip-red { background: var(--red-bg); color: var(--red-text); border: 1px solid #f0a8a8; }
+  .chip-blue { background: var(--blue-bg); color: var(--blue-text); border: 1px solid #a8caf0; }
+  .context-box { background: var(--blue-bg); border: 1px solid #a8caf0; border-radius: var(--radius); padding: 14px 16px; margin-bottom: 2rem; font-size: 13px; color: var(--blue-text); line-height: 1.6; }
+  .context-box strong { font-weight: 600; }
+  .section-header { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .section-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .jira-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; }
+  .jira-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .jira-card-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; gap: 12px; border-bottom: 1px solid var(--border); }
+  .jira-card-head-left { display: flex; align-items: center; gap: 12px; }
+  .jira-id { font-size: 12px; font-weight: 600; color: var(--blue); background: var(--blue-bg); border: 1px solid #a8caf0; padding: 3px 9px; border-radius: var(--radius-sm); white-space: nowrap; }
+  .jira-title { font-size: 14px; font-weight: 500; color: var(--text); }
+  .jira-body { padding: 14px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .jira-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .jira-section-label.red { color: var(--red); }
+  .jira-section-label.amber { color: var(--amber); }
+  .jira-section-label.blue { color: var(--blue); }
+  .jira-item { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; color: var(--text2); margin-bottom: 5px; line-height: 1.5; }
+  .jira-item:last-child { margin-bottom: 0; }
+  .jira-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; background: var(--text3); }
+  .jira-dot-red { background: var(--red); }
+  .jira-dot-amber { background: var(--amber); }
+  .jira-dot-green { background: var(--green); }
+  .jira-dot-blue { background: var(--blue); }
+  .jira-item strong { color: var(--text); font-weight: 500; }
+  .option-box { border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; }
+  .option-box:last-child { margin-bottom: 0; }
+  .option-preferred { background: var(--blue-bg); border: 1px solid #a8caf0; color: var(--blue-text); }
+  .option-alt { background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+  .option-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .option-preferred .option-label { color: var(--blue); }
+  .option-alt .option-label { color: var(--text3); }
+  .people-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 2rem; }
+  .person-pill { display: flex; align-items: center; gap: 7px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px 5px 6px; font-size: 12px; }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+  .av-blue { background: var(--blue-bg); color: var(--blue-text); }
+  .av-amber { background: var(--amber-bg); color: var(--amber-text); }
+  .av-teal { background: #e1f5ee; color: #085041; }
+  .person-pill-name { font-weight: 500; color: var(--text); }
+  .person-pill-role { color: var(--text3); font-size: 11px; margin-left: 2px; }
+  .footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); display: flex; justify-content: space-between; }
+  .footer a { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .footer a:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    .jira-body { grid-template-columns: 1fr; }
+    .header-top { flex-direction: column; }
+    .page { padding: 1.25rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>eBids Dev Call — Reference Sheet</h1>
+        <p>Week of June 16, 2026 &nbsp;·&nbsp; Lead: Venkat Kuttua &nbsp;·&nbsp; Rachel OOO — Mike joining in her absence</p>
+      </div>
+      <span class="chip chip-warn">🟡 In Development</span>
+    </div>
+  </div>
+
+  <div class="context-box">
+    <strong>Context for Mike:</strong> This is a standing dev call with Venkat, Vineet and Prasad to get status updates on active eBids dev items. Goal is a quick check-in — no decisions needed. Flag anything stalled so Rachel can follow up when she returns June 19.
+  </div>
+
+  <div class="section-header">Active Jiras — status check</div>
+  <div class="jira-list">
+
+    <div class="jira-card">
+      <div class="jira-card-head">
+        <div class="jira-card-head-left">
+          <span class="jira-id">SFDC-25059</span>
+          <span class="jira-title">eBids record fields and calculations</span>
+        </div>
+        <span class="chip chip-warn">In Development</span>
+      </div>
+      <div class="jira-body">
+        <div>
+          <div class="jira-section-label">What to check</div>
+          <div class="jira-item"><div class="jira-dot"></div>Field build progress — are all pricing fields in place?</div>
+          <div class="jira-item"><div class="jira-dot"></div>GM% formula — Sandra to send to Rachel. Has this been received?</div>
+          <div class="jira-item"><div class="jira-dot"></div>P&L view — separate working session still needed on return</div>
+        </div>
+        <div>
+          <div class="jira-section-label amber">Owner</div>
+          <div class="jira-item"><div class="jira-dot-amber"></div><strong>Venkat</strong> (SF Dev Lead) · <strong>Vineet</strong> (contractor)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="jira-card">
+      <div class="jira-card-head">
+        <div class="jira-card-head-left">
+          <span class="jira-id">SFDC-25395</span>
+          <span class="jira-title">SAP list price and distributor price pull</span>
+        </div>
+        <span class="chip chip-blue">Decision Needed</span>
+      </div>
+      <div class="jira-body">
+        <div>
+          <div class="jira-section-label blue">Two options — preferred first</div>
+          <div class="option-box option-preferred">
+            <div class="option-label">⭐ Option 1 — Preferred: Real-time SAP BAPI simulate</div>
+            Trigger an SAP pricing simulate (BAPI) in real time to return List Price and Distributor (Customer) Price directly into Salesforce. <strong>Question for Venkat + Prasad:</strong> If we can identify the correct simulate that includes these two pricing values, is this technically feasible?
+          </div>
+          <div class="option-box option-alt">
+            <div class="option-label">Option 2 — Fallback: Nightly batch</div>
+            Push SAP pricing conditions to Salesforce nightly and store them on the record. Dom/Miltos (batch interface owners) to be looped in only if Option 1 is ruled out.
+          </div>
+        </div>
+        <div>
+          <div class="jira-section-label amber">Owner</div>
+          <div class="jira-item"><div class="jira-dot-amber"></div><strong>Venkat</strong> — SF Dev · assess BAPI feasibility</div>
+          <div class="jira-item"><div class="jira-dot-amber"></div><strong>Prasad K</strong> — SAP Dev · identify correct simulate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="jira-card">
+      <div class="jira-card-head">
+        <div class="jira-card-head-left">
+          <span class="jira-id">SFDC-25402</span>
+          <span class="jira-title">Pricing floors and guides</span>
+        </div>
+        <span class="chip chip-warn">Waiting — Vineet</span>
+      </div>
+      <div class="jira-body">
+        <div>
+          <div class="jira-section-label">What to check</div>
+          <div class="jira-item"><div class="jira-dot"></div>Vineet is making adjustments per Rachel's requirements — not in testing yet</div>
+          <div class="jira-item"><div class="jira-dot"></div>What is the status of those updates? Any blockers?</div>
+        </div>
+        <div>
+          <div class="jira-section-label amber">Owner</div>
+          <div class="jira-item"><div class="jira-dot-amber"></div><strong>Vineet Kumar</strong> — completing requirement updates</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="jira-card">
+      <div class="jira-card-head">
+        <div class="jira-card-head-left">
+          <span class="jira-id">SFDC-25405</span>
+          <span class="jira-title">Price increase / decrease mechanism</span>
+        </div>
+        <span class="chip chip-warn">Waiting — Sandra</span>
+      </div>
+      <div class="jira-body">
+        <div>
+          <div class="jira-section-label">What to check</div>
+          <div class="jira-item"><div class="jira-dot"></div>Has Sandra sent field criteria to Venkat yet?</div>
+          <div class="jira-item"><div class="jira-dot"></div>If not received — dev cannot start. Flag for Rachel on return.</div>
+        </div>
+        <div>
+          <div class="jira-section-label amber">Owner</div>
+          <div class="jira-item"><div class="jira-dot-amber"></div><strong>Sandra Smith</strong> to send criteria · <strong>Venkat</strong> to build once received</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-header">Attendees</div>
+  <div class="people-row">
+    <div class="person-pill"><div class="avatar av-blue">RT</div><span class="person-pill-name">Rachel Throop</span><span class="person-pill-role">· IT Manager (OOO)</span></div>
+    <div class="person-pill"><div class="avatar av-blue">MC</div><span class="person-pill-name">Mike Conti</span><span class="person-pill-role">· Covering for Rachel</span></div>
+    <div class="person-pill"><div class="avatar av-blue">VK</div><span class="person-pill-name">Venkat Kuttua</span><span class="person-pill-role">· SF Dev Lead</span></div>
+    <div class="person-pill"><div class="avatar av-blue">VI</div><span class="person-pill-name">Vineet Kumar</span><span class="person-pill-role">· SF Dev contractor</span></div>
+    <div class="person-pill"><div class="avatar av-teal">PK</div><span class="person-pill-name">Prasad K</span><span class="person-pill-role">· SAP Dev</span></div>
+  </div>
+
+  <div class="footer">
+    <span>eBids Dev Call · Week of June 16, 2026 · Rachel Throop OOO — returns June 19</span>
+    <a href="https://newell-it.atlassian.net" target="_blank">Open Jira ↗</a>
+  </div>
+
+</main>
+</body>
+</html>
